@@ -1,0 +1,2706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Prompt Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=Mukta:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Space Grotesk', sans-serif; 
+            background-color: #030303;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                radial-gradient(circle at 0% 0%, rgba(232, 30, 41, 0.1), transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(59, 130, 246, 0.1), transparent 40%);
+            background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
+            background-attachment: fixed;
+            color: #e2e8f0; 
+            overflow-x: hidden; 
+            min-height: 100vh; 
+        }
+        
+        /* Minimal Neon Theme */
+        .glass-panel {
+            background: #080808;
+            border: 1px solid #27272a;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+        .glass-panel:hover {
+            border-color: #e81e29;
+            box-shadow: 0 0 30px rgba(232, 30, 41, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .input-field {
+            background: #000;
+            border: 1px solid #27272a;
+            color: #fff;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            padding: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .input-field:focus {
+            background: #000;
+            border-color: #e81e29;
+            box-shadow: 0 0 0 1px #e81e29, 0 0 20px rgba(232, 30, 41, 0.2);
+            outline: none;
+            transform: scale(1.01);
+        }
+
+        .tag-btn {
+            background: transparent;
+            border: 1px solid #27272a;
+            color: #71717a;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .tag-btn:hover {
+            border-color: #e81e29;
+            color: #fff;
+            background: rgba(232, 30, 41, 0.05);
+            box-shadow: 0 0 15px rgba(232, 30, 41, 0.2);
+        }
+        .tag-btn.active {
+            background: #e81e29;
+            color: #fff;
+            border-color: #e81e29;
+            box-shadow: 0 0 20px rgba(232, 30, 41, 0.4);
+        }
+
+        /* Custom range slider */
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 2px; background: #27272a; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #000; border: 2px solid #e81e29; box-shadow: 0 0 10px rgba(232, 30, 41, 0.8); margin-top: -7px; cursor: pointer; transition: transform 0.1s; }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); background: #e81e29; }
+        
+        /* Toast */
+        #toast { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); background: #000; border: 1px solid #e81e29; color: white; box-shadow: 0 0 30px rgba(232, 30, 41, 0.3); border-radius: 8px; }
+
+        /* Micro-interactions */
+        button:active, .tag-btn:active { transform: scale(0.98); }
+        
+        /* Staggered Animation */
+        @keyframes staggerFadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .stagger-appear > * { opacity: 0; animation: staggerFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .stagger-appear > *:nth-child(1) { animation-delay: 0ms; }
+        .stagger-appear > *:nth-child(2) { animation-delay: 50ms; }
+        .stagger-appear > *:nth-child(3) { animation-delay: 100ms; }
+        .stagger-appear > *:nth-child(4) { animation-delay: 150ms; }
+        .stagger-appear > *:nth-child(5) { animation-delay: 200ms; }
+        .stagger-appear > *:nth-child(6) { animation-delay: 250ms; }
+        .stagger-appear > *:nth-child(7) { animation-delay: 300ms; }
+        .stagger-appear > *:nth-child(8) { animation-delay: 350ms; }
+        .stagger-appear > *:nth-child(9) { animation-delay: 400ms; }
+
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .btn-shimmer {
+            background: linear-gradient(110deg, #e81e29 20%, #ff4d58 40%, #e81e29 60%);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite linear;
+            border: none;
+            box-shadow: 0 0 20px rgba(232, 30, 41, 0.4);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        /* Fade Animation */
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden { display: none !important; }
+
+        /* Mode Switcher Buttons */
+        .mode-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #71717a;
+            transition: all 0.3s ease;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+        .mode-btn:hover { color: #fff; border-color: #27272a; }
+        .mode-btn.active {
+            background: rgba(232, 30, 41, 0.1);
+            color: #e81e29;
+            border: 1px solid #e81e29;
+            box-shadow: 0 0 15px rgba(232, 30, 41, 0.2);
+        }
+
+        /* Ratio Buttons */
+        .ratio-btn {
+            background: transparent;
+            border: 1px solid #27272a;
+            color: #71717a;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+            padding: 0.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .ratio-btn:hover {
+            border-color: #e81e29;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(232, 30, 41, 0.2);
+        }
+        .ratio-btn.active {
+            background: #e81e29;
+            color: #fff;
+            border-color: #e81e29;
+            box-shadow: 0 0 20px rgba(232, 30, 41, 0.5);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #e81e29; }
+
+        /* Landing Page Animations */
+        .blob { position: absolute; filter: blur(120px); opacity: 0.15; animation: float 10s infinite ease-in-out alternate; border-radius: 50%; z-index: 0; }
+        @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, -30px); } }
+        
+        .landing-title { 
+            color: #fff;
+            text-shadow: 0 0 40px rgba(232, 30, 41, 0.5);
+        }
+
+        .animate-up { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(30px); }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+    
+    <!-- Landing Page -->
+    <div id="landing-page" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black text-center p-6 transition-all duration-700 ease-in-out overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] opacity-20"></div>
+        <div class="blob bg-[#e81e29] w-[30rem] h-[30rem] top-0 left-0 -translate-x-1/3 -translate-y-1/3 opacity-20"></div>
+        <div class="blob bg-blue-600 w-[40rem] h-[40rem] bottom-0 right-0 translate-x-1/3 translate-y-1/3 opacity-10" style="animation-delay: -3s;"></div>
+        
+        <div class="relative z-10 max-w-5xl space-y-8">
+            <div class="space-y-4">
+                <div class="inline-block px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs font-medium text-slate-400 mb-4 animate-up">
+                    v2.0 Beta Now Available
+                </div>
+                <h1 class="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter animate-up delay-100 landing-title">
+                    The Prompt <br />
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#e81e29] to-orange-500">Architect</span>
+                </h1>
+                <p class="text-slate-400 text-lg md:text-xl font-light tracking-wide animate-up delay-200 max-w-2xl mx-auto leading-relaxed">
+                    Craft professional-grade AI prompts for Nano Banana, Midjourney, Stable Diffusion & DALL-E 3 with a designer-first interface made by a fellow Brand Designer & Prompt Engineer syuj.ai_
+                </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-up delay-300 pt-8">
+                <button onclick="enterApp()" class="group relative px-10 py-4 bg-white text-black font-bold rounded-full overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.4)]">
+                    <span class="relative z-10 flex items-center gap-3 text-lg tracking-tight">
+                        Enter Studio <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </span>
+                </button>
+                <a href="#" class="px-10 py-4 text-slate-400 hover:text-white font-medium transition-colors">Learn More</a>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-8 text-white/10 text-xs font-mono animate-up delay-300">
+            DESIGNED BY SYUJ
+        </div>
+    </div>
+
+    <div id="app-container" class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 hidden opacity-0 transition-all duration-1000 transform translate-y-10">
+        
+        <!-- Header -->
+        <div class="lg:col-span-3 mb-6">
+            <h1 class="text-4xl md:text-5xl font-light text-white mb-2 tracking-tight">The Prompt Architect</h1>
+            <p class="text-slate-500 font-light">Crafting precise prompts for Image Generation, Mockups, Product Shoots & Graphic Designs</p>
+            
+            <!-- Mode Switcher -->
+            <div class="mt-6 flex justify-center">
+                <div class="glass-panel p-1 rounded-full inline-flex">
+                    <button onclick="switchMode('image')" id="mode-image" class="mode-btn active">Image Prompts</button>
+                    <button onclick="switchMode('mockup')" id="mode-mockup" class="mode-btn">Mockup Generator</button>
+                    <button onclick="switchMode('product')" id="mode-product" class="mode-btn">Product Shoot</button>
+                    <button onclick="switchMode('graphic')" id="mode-graphic" class="mode-btn">Graphic Design</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Left Column: Controls -->
+        <div id="imageControls" class="lg:col-span-2 space-y-6 stagger-appear">
+            
+            <!-- Main Subject -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-2 uppercase tracking-widest">Core Subject</label>
+                <textarea id="subjectInput" rows="3" class="input-field w-full rounded-xl p-4 text-lg text-white placeholder-slate-500" placeholder="e.g., A futuristic city floating in the clouds..."></textarea>
+                
+                <div class="mt-4 flex items-center gap-4">
+                    <label class="text-xs text-white/40 font-bold uppercase tracking-widest">Subject Weight</label>
+                    <input id="weightSlider" type="range" min="0.5" max="2" step="0.1" value="1" class="flex-1 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                    <span id="weightValue" class="font-mono text-xs text-white/60">1.0</span>
+                </div>
+            </div>
+
+            <!-- Style & Medium -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <div class="flex justify-between items-baseline mb-4">
+                    <label class="text-white/60 text-xs font-bold uppercase tracking-widest">Art Style & Medium</label>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="styleGrid">
+                    <!-- JS will populate -->
+                </div>
+            </div>
+
+            <!-- Camera Gear -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Gear</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Camera Body</label>
+                        <select id="imageCameraSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Lens Model</label>
+                        <select id="imageLensModelSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Focal Length</label>
+                        <select id="imageFocalSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Aperture</label>
+                        <select id="imageApertureSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lighting & Camera -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 ">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Lighting</label>
+                    <select id="lightingSelect" class="input-field w-full rounded-lg p-3 text-white">
+                        <option value="">None</option>
+                        <!-- JS populate -->
+                    </select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl ">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Cinematography</label>
+                    <select id="cinematographySelect" class="input-field w-full rounded-lg p-3 text-white">
+                        <option value="">None</option>
+                        <!-- JS populate -->
+                    </select>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl ">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Angle</label>
+                    <select id="cameraAngleSelect" class="input-field w-full rounded-lg p-3 text-white">
+                        <option value="">None</option>
+                        <!-- JS populate -->
+                    </select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Lenses</label>
+                    <select id="cameraLensSelect" class="input-field w-full rounded-lg p-3 text-white">
+                        <option value="">None</option>
+                        <!-- JS populate -->
+                    </select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Mood / Atmosphere</label>
+                    <select id="moodSelect" class="input-field w-full rounded-lg p-3 text-white">
+                        <option value="">None</option>
+                        <!-- JS populate -->
+                    </select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Composition</label>
+                    <select id="compositionSelect" class="input-field w-full rounded-lg p-3 text-white">
+                        <option value="">None</option>
+                        <!-- JS populate -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Modifiers -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-4 uppercase tracking-widest">Quality Boosters</label>
+                <div class="flex flex-wrap gap-2" id="boosterContainer">
+                    <!-- JS populate -->
+                </div>
+            </div>
+
+            <!-- Artist & Color -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Artist Style</label>
+                    <select id="artistSelect" class="input-field w-full rounded-lg p-3 text-white">
+                        <option value="">None</option>
+                        <!-- JS populate -->
+                    </select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Color Palette</label>
+                    <select id="colorSelect" class="input-field w-full rounded-lg p-3 text-white">
+                        <option value="">None</option>
+                        <!-- JS populate -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Advanced Parameters -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-4 uppercase tracking-widest">Advanced Parameters</label>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-xs mb-2"><label for="chaosSlider" class="text-slate-400">Chaos (0-100)</label><span id="chaosValue" class="font-mono text-white/60">0</span></div>
+                        <input id="chaosSlider" type="range" min="0" max="100" value="0" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs mb-2"><label for="stylizeSlider" class="text-slate-400">Stylize (0-1000)</label><span id="stylizeValue" class="font-mono text-white/60">100</span></div>
+                        <input id="stylizeSlider" type="range" min="0" max="1000" value="100" step="25" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Mockup Controls (Hidden by default) -->
+        <div id="mockupControls" class="lg:col-span-2 space-y-6 hidden stagger-appear">
+            <!-- Mockup Subject -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-2 uppercase tracking-widest">Design / Content on Mockup</label>
+                <textarea id="mockupContent" rows="2" class="input-field w-full rounded-xl p-4 text-lg text-white placeholder-slate-500" placeholder="e.g., A minimalist logo of a fox, typography saying 'FUTURE'"></textarea>
+            </div>
+
+            <!-- Category & Item -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Mockup Category</label>
+                    <select id="mockupCategorySelect" class="input-field w-full rounded-lg p-3 text-white" onchange="filterMockupItems()">
+                        <!-- JS populate -->
+                    </select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Target Item</label>
+                    <select id="mockupItemSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+            </div>
+
+            <!-- Material & Finish -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Material / Texture</label>
+                    <select id="mockupMaterialSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Print Finish</label>
+                    <select id="mockupFinishSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+            </div>
+
+            <!-- Composition & Depth -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Composition / Layout</label>
+                    <select id="mockupCompositionSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Focus / Depth</label>
+                    <select id="mockupDepthSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+            </div>
+
+            <!-- Presentation & Environment -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Presentation View</label>
+                    <select id="mockupViewSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Environment</label>
+                    <select id="mockupEnvSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+            </div>
+            
+            <!-- Lighting, Shadows & Color -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Lighting Setup</label>
+                    <select id="mockupLightingSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Mood / Style</label>
+                    <select id="mockupStyleSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Shadows & Effects</label>
+                    <select id="mockupEffectSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Brand Color Palette</label>
+                    <select id="mockupColorSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Photography Controls (Hidden by default) -->
+        <div id="productControls" class="lg:col-span-2 space-y-6 hidden stagger-appear">
+            <!-- Product Input -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-2 uppercase tracking-widest">Product Description</label>
+                <textarea id="productInput" rows="2" class="input-field w-full rounded-xl p-4 text-lg text-white placeholder-slate-500" placeholder="e.g., A luxury perfume bottle with gold accents..."></textarea>
+                
+                <!-- Visual Placeholder for Image Upload -->
+                <div class="mt-4 p-4 border border-dashed border-white/20 rounded-xl bg-white/5 text-center cursor-pointer hover:bg-white/10 transition-colors relative group">
+                    <input type="file" id="productImageUpload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleImageUpload(this)">
+                    <div id="uploadPlaceholder">
+                        <p class="text-sm text-white/60 font-bold">📸 Upload Reference Product Image</p>
+                        <p class="text-xs text-white/40 mt-1">AI will use this as the source (Image-to-Image)</p>
+                    </div>
+                    <img id="imagePreview" class="hidden max-h-32 mx-auto rounded-lg shadow-lg" />
+                </div>
+                
+                <div class="mt-4 flex items-center gap-4">
+                    <label class="text-xs text-white/40 font-bold uppercase tracking-widest">Image Fidelity (IW)</label>
+                    <input id="prodWeightSlider" type="range" min="0.5" max="3" step="0.1" value="2" class="flex-1 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                    <span id="prodWeightValue" class="font-mono text-xs text-white/60">2.0</span>
+                </div>
+            </div>
+
+            <!-- Context & Lighting -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Placement / Context</label>
+                    <select id="prodContextSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Studio Lighting</label>
+                    <select id="prodLightingSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+            </div>
+
+            <!-- Outdoor Lighting -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Outdoor Lighting</label>
+                <select id="prodOutdoorLightingSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+            </div>
+
+            <!-- Camera & Shot -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Angle</label>
+                    <select id="prodAngleSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Shot Type / Lens</label>
+                    <select id="prodShotSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+            </div>
+
+            <!-- Camera Gear -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Gear</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Camera Body</label>
+                        <select id="prodCameraSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Lens Model</label>
+                        <select id="prodLensSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Focal Length</label>
+                        <select id="prodFocalSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Aperture</label>
+                        <select id="prodApertureSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Material & Color -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Background Material</label>
+                    <select id="prodMaterialSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Color Grading</label>
+                    <select id="prodColorSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+            </div>
+
+            <!-- Props & Vibe -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Props & Elements</label>
+                    <select id="prodPropsSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Brand Vibe</label>
+                    <select id="prodVibeSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphic Design Controls (Hidden by default) -->
+        <div id="graphicControls" class="lg:col-span-2 space-y-6 hidden stagger-appear">
+            <!-- Core Concept -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="block text-white/60 text-xs font-bold uppercase tracking-widest">Design Concept</label>
+                </div>
+                <textarea id="graphicConceptInput" rows="3" class="input-field w-full rounded-xl p-4 text-lg text-white placeholder-slate-500" placeholder="e.g., A futuristic music festival poster with neon geometry..."></textarea>
+            </div>
+
+            <!-- Content & Context -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-4 uppercase tracking-widest">Content & Context</label>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Brand Name</label>
+                        <input id="graphicBrandNameInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. Nike, Apple...">
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Industry / Niche</label>
+                        <select id="graphicIndustrySelect" class="input-field w-full rounded-lg p-3 text-sm text-white"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Target Audience</label>
+                        <input id="graphicAudienceInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. Gen Z, Corporate...">
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Brand Vibe</label>
+                        <input id="graphicBrandInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. Luxury, Minimalist...">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Occasion</label>
+                        <select id="graphicOccasionSelect" class="input-field w-full rounded-lg p-3 text-sm text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Mood</label>
+                        <select id="graphicMoodSelect" class="input-field w-full rounded-lg p-3 text-sm text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Setting</label>
+                        <input id="graphicLocationInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. Urban City...">
+                    </div>
+                </div>
+
+                <!-- Written Content -->
+                <div class="border-t border-white/10 pt-4 mt-4">
+                    <label class="block text-white/40 text-xs font-bold uppercase tracking-widest mb-3">Written Content</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-white/40 text-xs mb-1">Headline</label>
+                            <input id="graphicHeadlineInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. SUMMER SALE">
+                        </div>
+                        <div>
+                            <label class="block text-white/40 text-xs mb-1">Subheadline</label>
+                            <input id="graphicSubheadlineInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. Up to 50% Off">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-white/40 text-xs mb-1">Tagline</label>
+                            <input id="graphicTaglineInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. Just Do It">
+                        </div>
+                        <div>
+                            <label class="block text-white/40 text-xs mb-1">CTA</label>
+                            <input id="graphicCtaInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. Shop Now">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-white/40 text-xs mb-1">Date</label>
+                            <input id="graphicDateInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. July 25th">
+                        </div>
+                        <div>
+                            <label class="block text-white/40 text-xs mb-1">Time</label>
+                            <input id="graphicTimeInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. 8:00 PM">
+                        </div>
+                        <div>
+                            <label class="block text-white/40 text-xs mb-1">Venue</label>
+                            <input id="graphicVenueInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. Main Hall">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-white/40 text-xs mb-1">Price / Offer</label>
+                            <input id="graphicPriceInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. $99, 50% Off">
+                        </div>
+                        <div>
+                            <label class="block text-white/40 text-xs mb-1">Contact / Website</label>
+                            <input id="graphicContactInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. www.site.com">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white/40 text-xs mb-1">Social Handles</label>
+                            <input id="graphicSocialInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. @brand">
+                        </div>
+                        <div>
+                            <label class="block text-white/40 text-xs mb-1">Disclaimer</label>
+                            <input id="graphicDisclaimerInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. T&C Apply">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Design Specs -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Format</label>
+                    <select id="graphicFormatSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Style</label>
+                    <select id="graphicStyleSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Composition</label>
+                    <select id="graphicCompositionSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Typography</label>
+                    <select id="graphicTypographySelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Color Palette</label>
+                    <select id="graphicColorSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Visual Elements</label>
+                    <select id="graphicElementSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+            </div>
+
+            <!-- Theme & Boosters -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Theme</label>
+                <select id="graphicThemeSelect" class="input-field w-full rounded-lg p-3 text-white mb-6"></select>
+                
+                <label class="block text-white/60 text-xs font-bold mb-4 uppercase tracking-widest">Quality Boosters</label>
+                <div class="flex flex-wrap gap-2" id="graphicBoosterContainer"></div>
+            </div>
+
+            <!-- Reference (Moved from right column in source to left column here) -->
+            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Reference / Redesign</label>
+                <input id="graphicRefUrl" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white mb-3" placeholder="Image URL...">
+                <div class="grid grid-cols-2 gap-4">
+                    <select id="graphicRefMode" class="input-field w-full rounded-lg p-3 text-sm text-white">
+                        <option value="img">Image Prompt</option>
+                        <option value="sref">Style Ref (--sref)</option>
+                        <option value="cref">Char Ref (--cref)</option>
+                    </select>
+                    <select id="graphicRefWeight" class="input-field w-full rounded-lg p-3 text-sm text-white">
+                        <option value="low">Low</option>
+                        <option value="med" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="max">Max</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Output & Settings -->
+        <div class="lg:col-span-1 space-y-6">
+            
+            <!-- Output Card -->
+            <div class="glass-panel p-6 rounded-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-medium text-white">Generated Prompt</h2>
+                    <span class="text-xs bg-white/10 text-white/60 px-2 py-1 rounded" id="tokenCount">0 chars</span>
+                </div>
+                
+                <div class="relative group">
+                    <textarea id="finalPrompt" readonly class="w-full h-48 bg-black/30 border border-white/10 rounded-xl p-4 text-slate-200 text-sm leading-relaxed resize-none focus:border-white/30 transition-colors"></textarea>
+                </div>
+
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <button onclick="copyToClipboard()" id="copyBtn" class="glass-panel hover:bg-white/5 border border-white/10 text-white font-medium py-3 px-4 rounded-xl transition-all">Copy</button>
+                    <button onclick="randomize()" class="glass-panel hover:bg-white/5 border border-white/10 text-white font-medium py-3 px-4 rounded-xl transition-all">Random</button>
+                    <button onclick="magicEnhance()" class="col-span-2 btn-shimmer text-white font-medium py-3 px-4 rounded-xl transition-all hover:scale-[1.02] active:scale-95">Magic Enhance</button>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <button onclick="saveFavorite()" class="bg-white text-black hover:bg-gray-200 font-bold py-3 px-4 rounded-xl transition-all">
+                        Save Favorite
+                    </button>
+                    <button onclick="clearAll()" class="bg-transparent hover:bg-red-500/10 border border-white/10 hover:border-red-500/30 text-white/60 hover:text-red-400 font-medium py-3 px-4 rounded-xl transition-all">
+                        Clear All
+                    </button>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-white/10">
+                    <label class="block text-white/40 text-xs font-bold mb-2 uppercase tracking-widest">Negative Prompt</label>
+                    <textarea id="negativePrompt" rows="2" class="input-field w-full rounded-lg p-3 text-xs text-slate-300" placeholder="ugly, blurry, low quality..."></textarea>
+                </div>
+                
+                <div class="mt-4">
+                    <label class="block text-white/40 text-xs font-bold mb-2 uppercase tracking-widest">Aspect Ratio</label>
+                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                        <button class="ratio-btn" data-ratio="">Default</button>
+                        <button class="ratio-btn" data-ratio="--ar 1:1">1:1</button>
+                        <button class="ratio-btn" data-ratio="--ar 16:9">16:9</button>
+                        <button class="ratio-btn" data-ratio="--ar 9:16">9:16</button>
+                        <button class="ratio-btn" data-ratio="--ar 4:3">4:3</button>
+                        <button class="ratio-btn" data-ratio="--ar 3:4">3:4</button>
+                        <button class="ratio-btn" data-ratio="--ar 3:2">3:2</button>
+                        <button class="ratio-btn" data-ratio="--ar 2:3">2:3</button>
+                        <button class="ratio-btn" data-ratio="--ar 2:1">2:1</button>
+                        <button class="ratio-btn" data-ratio="--ar 1:2">1:2</button>
+                        <button class="ratio-btn" data-ratio="--ar 21:9">21:9</button>
+                        <button class="ratio-btn" data-ratio="--ar 9:21">9:21</button>
+                        <button class="ratio-btn" data-ratio="--ar 5:4">5:4</button>
+                        <button class="ratio-btn" data-ratio="--ar 4:5">4:5</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Favorites & History Panel -->
+            <div class="glass-panel p-6 rounded-2xl space-y-4 ">
+                <div class="flex gap-4 border-b border-white/10 pb-2">
+                    <button onclick="switchTab('favorites')" id="tab-favorites" class="text-white font-medium border-b-2 border-white pb-1 transition-colors">Favorites</button>
+                    <button onclick="switchTab('history')" id="tab-history" class="text-white/40 font-medium hover:text-white transition-colors">History</button>
+                </div>
+                <div id="favoritesContainer" class="space-y-3 max-h-96 overflow-y-auto pr-2">
+                    <!-- JS will populate -->
+                </div>
+                <div id="historyContainer" class="space-y-3 max-h-96 overflow-y-auto pr-2 hidden">
+                    <!-- JS will populate -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-5 right-5 bg-white text-black font-medium py-3 px-6 rounded-full shadow-2xl transform translate-x-[120%]">
+        Copied to clipboard!
+    </div>
+
+    <script>
+        // Data
+        const styles = [
+            "Realistic", "Cyberpunk", "Anime", "Oil Painting", 
+            "Watercolor", "Digital Art", "Steampunk", "Synthwave",
+            "Pencil Sketch", "3D Render", "Concept Art", "Ukiyo-e",
+            "Pixel Art", "Cinematic", "Fantasy", "Abstract",
+            "Impressionism", "Art Nouveau", "Surrealism", "Minimalist", "Gothic",
+            "Baroque", "Rococo", "Bauhaus", "Cubism", "Expressionism", "Fauvism", 
+            "Dadaism", "Constructivism", "De Stijl", "Pop Art", "Op Art", "Photorealism", 
+            "Conceptual Art", "Voxel Art", "Low Poly", "Glitch Art", "Generative Art", 
+            "Fractal Art", "Datamoshing", "ASCII Art", "Vector Art", "Isometric 3D",
+            "Claymation", "Stop Motion", "Papercut", "Origami", "Stained Glass",
+            "Graffiti", "Street Art", "Stencil Art", "Chalk Art", "Charcoal Drawing",
+            "Ink Wash", "Gouache", "Acrylic", "Pastel", "Encaustic", "Tempera",
+            "Fresco", "Mosaic", "Tapestry", "Embroidery", "Knitting", "Quilting"
+        ];
+
+        const lighting = [
+            "Cinematic Lighting", "Natural Light", "Golden Hour", "Blue Hour",
+            "Studio Lighting", "Neon Lights", "Volumetric Lighting", "Bioluminescent",
+            "Softbox", "Rim Lighting", "God Rays", "Dark & Moody",
+            "Backlight", "Chiaroscuro", "Rembrandt Lighting", "Split Lighting",
+            "Butterfly Lighting", "Loop Lighting", "Broad Lighting", "Short Lighting",
+            "Silhouette", "Hard Light", "Soft Light", "Candlelight", "Firelight",
+            "Moonlight", "Starlight", "Fluorescent", "Incandescent", "Fiber Optic",
+            "Glow Stick", "Global Illumination", "Ray Tracing", "Ambient Occlusion",
+            "Subsurface Scattering", "Caustics", "Lens Flare", "Chromatic Aberration",
+            "Paramount Lighting", "Badger Lighting", "Clamshell Lighting", "Kicker Light",
+            "Fill Light", "Key Light", "Bounce Light", "Practical Lighting", "Motivated Lighting",
+            "Available Light", "Specular Highlight", "Diffuse Light", "Ring Light", "Beauty Dish"
+        ];
+
+        const cinematography = [
+            "Shot on 35mm", "70mm IMAX", "Technicolor", "Kodak Portra 400", 
+            "Fujifilm Pro 400H", "Cinestill 800T", "Polaroid", "Vintage Film", 
+            "Black and White", "Sepia", "VHS Glitch", "Double Exposure", 
+            "Long Exposure", "Tilt-Shift", "Motion Blur", "Fish-Eye",
+            "Kodachrome", "Ektachrome", "Daguerreotype", "Tintype", "Cyanotype",
+            "Wet Plate", "Infrared", "Thermal Imaging", "Night Vision", "X-Ray",
+            "Microscope", "Telescope", "Satellite View", "Drone Footage", "GoPro",
+            "Dashcam", "CCTV", "Disposable Camera", "Pinhole Camera", "Lomo",
+            "Holga", "Instax", "Wet Collodion", "Techniscope", "VistaVision", 
+            "Super 8", "8mm", "16mm", "Super 16", "Digital IMAX", "Arri Alexa", 
+            "Red Monstro", "Sony Venice", "Blackmagic", "Phantom Flex", "Steadicam"
+        ];
+
+        const moods = [
+            "Ethereal", "Ominous", "Whimsical", "Melancholic", "Euphoric", 
+            "Serene", "Chaotic", "Mysterious", "Romantic", "Gritty", "Dreamy", "Surreal",
+            "Nostalgic", "Cybernetic", "Apocalyptic", "Dystopian", "Utopian",
+            "Medieval", "Ancient", "Futuristic", "Retro", "Vintage", "Industrial",
+            "Organic", "Geometric", "Abstract", "Minimalist", "Maximalist",
+            "Psychedelic", "Trippy", "Hallucinogenic", "Spiritual", "Epic",
+            "Heroic", "Villainous", "Peaceful", "Tranquil", "Energetic",
+            "Melancholy", "Anxiety", "Dread", "Awe", "Wonder", "Curiosity", 
+            "Confusion", "Despair", "Hope", "Love", "Passion", "Anger", "Rage", 
+            "Fear", "Terror", "Joy", "Happiness", "Sadness", "Grief", "Disgust", 
+            "Surprise", "Anticipation", "Trust", "Zen", "Blissful", "Gloomy"
+        ];
+
+        const compositions = [
+            "Rule of Thirds", "Symmetrical", "Golden Ratio", "Centered", 
+            "Wide Shot", "Close-up", "Negative Space", "Dutch Angle", "Leading Lines", "Knolling",
+            "Fibonacci Spiral", "Asymmetrical", "Dynamic", "Static", "Balanced",
+            "Imbalanced", "Framing", "Diagonal", "Triangular", "Circular",
+            "Radial", "Spiral", "Fractal", "Chaotic", "Minimalist", "Maximalist",
+            "Flat Lay", "Perspective", "Depth", "Foreground", "Background", "Layered",
+            "Golden Triangle", "Dynamic Symmetry", "Rule of Odds", "Patterns", 
+            "Textures", "Rhythm", "Movement", "Unity", "Variety", "Emphasis",
+            "Frame within a Frame", "Juxtaposition", "Simplicity", "Isolation"
+        ];
+
+        const cameraAngles = [
+            "Drone View", "Isometric", "Top-Down", "First Person View", 
+            "Dutch Angle", "Low Angle", "High Angle", "Eye Level", 
+            "Bird's Eye View", "Worm's Eye View", "Over-the-Shoulder", 
+            "Selfie", "Satellite View", "Front View", "Side View", "Back View",
+            "Extreme Close-up", "Macro", "Medium Shot", "Long Shot", "Wide Shot",
+            "Establishing Shot", "Two Shot", "Group Shot", "Aerial Shot",
+            "Crane Shot", "Tracking Shot", "Handheld", "Ground Level",
+            "Underwater", "Split Screen", "Tilted", "Profile", "Three-Quarter View",
+            "Point of View", "Master Shot", "Insert Shot", "Cutaway", "Reaction Shot", 
+            "Reverse Angle", "Cowboy Shot", "Knee Shot", "Full Shot"
+        ];
+
+        const cameraLenses = [
+            "Wide Angle", "Telephoto", "Macro Lens", "Fisheye", "GoPro", 
+            "Tilt-Shift", "35mm", "50mm", "85mm", "100mm", "200mm", 
+            "Bokeh", "Depth of Field", "Motion Blur", "Panorama", "Microscope",
+            "Telescope Lens", "Ultra-Wide Angle", "16mm", "24mm", "135mm",
+            "300mm", "400mm", "500mm", "600mm", "800mm", "1200mm",
+            "Anamorphic Lens", "Prime Lens", "Zoom Lens", "Teleconverter",
+            "Lensbaby", "Petzval", "Helios 44-2", "Noctilux", "Summilux",
+            "Otus", "Cinema Lens", "Pinhole", "Catadioptric", "Soft Focus", 
+            "Split Diopter", "Leica", "Zeiss", "Canon L", "Nikon Nikkor", "Sony G Master"
+        ];
+
+        const boosters = [
+            "4k", "8k", "High Detail", "Masterpiece", "Best Quality", "Trending on ArtStation",
+            "Unreal Engine 5", "Octane Render", "Sharp Focus", "HDR",
+            "Vivid Colors", "Intricate", "Photorealistic", "Hyperrealistic",
+            "Insanely Detailed", "Hyper-maximalist", "Volumetric", "Subsurface Scattering",
+            "Ray Tracing", "Global Illumination", "Quantum Computing Render", "Nanite", "Lumen",
+            "Gigapixel", "Super Resolution", "Perfect Composition", "Award Winning",
+            "Studio Quality", "Professional", "Cinematic Composition", "Color Graded"
+        ];
+
+        const artists = [ 
+            "Artgerm", "Greg Rutkowski", "Alphonse Mucha", "H.R. Giger", "Hayao Miyazaki", 
+            "Studio Ghibli", "Wes Anderson", "Tim Burton", "Zdzisław Beksiński", "James Jean", 
+            "Moebius", "Frank Frazetta", "Vincent van Gogh", "Pablo Picasso", "Salvador Dali", 
+            "Claude Monet", "Leonardo da Vinci", "Rembrandt", "Andy Warhol", "Jackson Pollock", 
+            "Frida Kahlo", "Gustav Klimt", "Beeple", "Rossdraws", "Wlop", "Ilya Kuvshinov", 
+            "Simon Stålenhag", "Makoto Shinkai", "Junji Ito", "Kentaro Miura", "Yoji Shinkawa", 
+            "Yoshitaka Amano", "Akira Toriyama", "Eiichiro Oda", "Masashi Kishimoto",
+            "Michelangelo", "Raphael", "Caravaggio", "Bernini", "Vermeer", "Goya", 
+            "Turner", "Constable", "Manet", "Renoir", "Degas", "Cezanne", "Gauguin", 
+            "Munch", "Schiele", "Matisse", "Duchamp", "Magritte", "Miro", "Klee", 
+            "Chagall", "Kandinsky", "Mondrian", "Rothko", "Basquiat", "Banksy", "Hirst", 
+            "Koons", "Murakami", "Kusama", "Ai Weiwei", "Syd Mead", "Ralph McQuarrie"
+        ];
+
+        const colors = [ 
+            "Vibrant", "Monochromatic", "Pastel", "Neon Palette", "Earthy Tones", 
+            "Duotone", "Warm Colors", "Cool Colors", "Sepia", "Black and White",
+            "Cyberpunk Neon", "Vaporwave", "Synthwave", "Retro Wave", "Outrun",
+            "Pastel Goth", "Gothic", "Steampunk", "Dieselpunk", "Biopunk",
+            "Solarpunk", "Lunarpunk", "Atompunk", "Art Deco", "Art Nouveau",
+            "Bauhaus", "Psychedelic", "Acid", "Trippy", "Glitch", "Grunge",
+            "Vintage", "Retro", "Antique", "Rustic", "Industrial", "Organic",
+            "Natural", "Artificial", "Synthetic", "Digital", "Analog", "Film",
+            "Polaroid", "Kodachrome", "Technicolor", "Red", "Orange", "Yellow", 
+            "Green", "Blue", "Indigo", "Violet", "Purple", "Pink", "Brown", 
+            "Gray", "Silver", "Gold", "Copper", "Bronze", "Platinum", "Titanium", 
+            "Chrome", "Brass", "Zinc", "Nickel", "Lead", "Tin", "Iron", "Steel", 
+            "Aluminum", "Mercury", "Magnesium", "Cobalt", "Tungsten"
+        ];
+
+        // Mockup Data
+        const mockupCategories = {
+            "All": [],
+            "Packaging": [
+                "Box Packaging", "Coffee Pouch", "Stand-up Pouch", "Soda Can", "Cosmetic Bottle", "Jar", "Shopping Bag", 
+                "Mailer Box", "Tube Packaging", "Food Container", "Wine Bottle", "Beer Can", "Milk Carton", "Tetra Pak",
+                "Pizza Box", "Burger Box", "Chocolate Bar Wrapper", "Snack Bag", "Dropper Bottle", "Pump Bottle", 
+                "Spray Bottle", "Perfume Bottle", "Egg Carton", "Ice Cream Tub", "Tea Box", "Supplement Bottle", 
+                "Jerry Can", "Paint Bucket", "Tin Can", "Sachet", "Blister Pack", "Soap Box", "Candle Box"
+            ],
+            "Apparel": [
+                "T-Shirt", "Hoodie", "Sweatshirt", "Cap", "Beanie", "Tote Bag", "Socks", "Jacket", "Leggings", "Shorts", 
+                "Tank Top", "Polo Shirt", "Jersey", "Scarf", "Gloves", "Apron", "Baby Onesie", "Bandana", "Backpack", 
+                "Duffle Bag", "Swimwear", "Activewear", "Suit", "Tie", "Bowtie", "Pyjamas", "Robes", "Slippers", 
+                "Sneakers", "Boots", "Sandals", "Denim Jacket", "Bomber Jacket", "Windbreaker", "Bucket Hat"
+            ],
+            "Stationery": [
+                "Business Card", "Stationery Set", "Letterhead", "Envelope", "Notebook", "Greeting Card", "Folder", 
+                "Clipboard", "Pen", "Pencil", "Eraser", "Ruler", "Stapler", "Paperclip", "Binder", "Planner", "Diary", 
+                "Calendar", "Postcard", "Invitation", "Notepad", "Sticky Notes", "Washi Tape", "Stamp Pad", "ID Badge", 
+                "Certificate Holder", "Menu Holder", "Sketchbook", "Journal", "Hang Tag"
+            ],
+            "Digital": [
+                "iPhone 15 Pro", "MacBook Pro", "iPad Pro", "iMac", "Android Phone", "Laptop Screen", "Smart Watch", 
+                "Tablet", "Desktop Monitor", "TV Screen", "VR Headset", "Handheld Console", "Smart Speaker", 
+                "Browser Window", "App Interface", "Website Header", "Social Media Post", "Foldable Phone", 
+                "Curved Monitor", "Digital Billboard", "Kiosk Screen", "ATM Screen", "POS Terminal", "E-Reader"
+            ],
+            "Print": [
+                "Poster Frame", "Canvas", "Magazine", "Hardcover Book", "Flyer", "Brochure", "Menu", "Book Cover", 
+                "Newspaper", "Catalog", "Zine", "Album Cover", "Vinyl Record", "CD Case", "Cassette Tape", "Ticket", 
+                "Coupon", "Certificate", "Diploma", "Postage Stamp", "Playing Cards", "Tarot Cards", "Bookmark", 
+                "Door Hanger", "Table Tent", "Coaster (Paper)", "Map", "Blueprint"
+            ],
+            "Signage": [
+                "Billboard", "Bus Stop Ad", "Storefront Sign", "Neon Sign", "A-Frame Sign", "Wall Decal", "Window Sign", 
+                "Street Banner", "Digital Signage", "Directional Sign", "Menu Board", "Trade Show Booth", "Roll-up Banner", 
+                "Flag", "Marquee", "Light Box", "Pylon Sign", "Monument Sign", "Yard Sign", "Vehicle Magnet", "Floor Decal",
+                "Wayfinding Sign", "Airport Signage"
+            ],
+            "Home": [
+                "Coffee Mug", "Water Bottle", "Pillow", "Bedding Set", "Coaster", "Candle", "Vase", "Plate", "Bowl", 
+                "Cutlery", "Tablecloth", "Napkin", "Towel", "Rug", "Curtain", "Lamp", "Clock", "Picture Frame", "Planter",
+                "Soap Dispenser", "Toothbrush Holder", "Bath Mat", "Shower Curtain", "Apron (Kitchen)", "Oven Mitt", 
+                "Tea Towel", "Wall Clock", "Mirror", "Furniture"
+            ],
+            "Vehicles": [
+                "Car Wrap", "Van Wrap", "Truck Wrap", "Bus Wrap", "Motorcycle", "Bicycle", "Scooter", "Skateboard", 
+                "Helmet", "License Plate", "Food Truck", "Delivery Van", "Taxi", "Subway Car", "Airplane Livery"
+            ],
+            "Cosmetics": [
+                "Lipstick", "Mascara", "Compact Powder", "Eyeshadow Palette", "Nail Polish", "Cream Jar", "Lotion Bottle", 
+                "Soap Bar", "Shampoo Bottle", "Conditioner Bottle", "Sheet Mask", "Bath Bomb", "Body Scrub", "Hair Oil", 
+                "Beard Oil", "Lip Gloss", "Eyeliner", "Makeup Brush", "Perfume Box"
+            ],
+            "Food & Drink": [
+                "Coffee Cup (Paper)", "Smoothie Cup", "Beer Bottle", "Wine Glass", "Whiskey Glass", "Cocktail Glass",
+                "Soda Bottle", "Juice Bottle", "Milkshake Glass", "Takeout Box", "Noodle Box", "Sushi Tray", "Donut Box"
+            ]
+        };
+        // Flatten for "All"
+        Object.values(mockupCategories).forEach(arr => mockupCategories["All"].push(...arr));
+        mockupCategories["All"] = [...new Set(mockupCategories["All"])].sort();
+
+        const mockupEnvironments = [
+            "Plain Background", "Gradient Background", "Minimalist Studio", "Marble Surface", 
+            "Wooden Desk", "Concrete Surface", "Terrazzo Podium", "Silk Fabric Background", 
+            "Urban Street", "Nature/Forest", "Beach/Sand", "Modern Office", "Cozy Cafe", 
+            "Living Room", "Industrial Loft", "Neon City", "Abstract 3D Shapes", 
+            "Floating in Air", "Held by Hand", "Kitchen Counter", "Bathroom Vanity",
+            "Bedroom Nightstand", "Coffee Table", "Dining Table", "Bookshelf",
+            "Retail Shelf", "Store Display", "Window Display", "Gallery Wall",
+            "Park Bench", "Garden", "Poolside", "Rooftop", "Balcony", "Patio",
+            "Warehouse", "Garage", "Workshop", "Laboratory", "Classroom", "Library",
+            "Cyberpunk City Street", "Futuristic Laboratory", "Ancient Ruins", "Art Gallery", 
+            "Museum Display", "Luxury Boutique", "Supermarket Shelf", "Pharmacy Shelf", 
+            "Bakery Counter", "Bar Counter", "Picnic Blanket", "Gym Floor", "Yoga Studio", 
+            "Construction Site", "Warehouse Racking", "Desert Dunes", "Snowy Landscape",
+            "Underwater", "Space Station", "Greenhouse"
+        ];
+
+        const mockupStyles = [
+            "Photorealistic", "High-End Product Photography", "3D Render", 
+            "Clay Render", "Minimalist", "Flat Lay", "Isometric", "Cinematic", 
+            "Studio Quality", "Commercial Ad Style", "Moody", "Vibrant", "Pastel",
+            "Monochrome", "Dark Mode", "Light Mode", "Tech", "Organic", "Rustic",
+            "Luxury", "Elegant", "Playful", "Fun", "Serious", "Professional",
+            "Corporate", "Creative", "Artistic", "Abstract", "Surreal", "Futuristic",
+            "Retro", "Vintage", "Grunge", "Clean", "Sleek", "Bold", "Edgy",
+            "Bauhaus", "Art Deco", "Pop Art", "Memphis", "Vaporwave", "Bohemian", 
+            "Scandi", "Japandi", "Industrial Chic", "Mid-Century Modern", "Gothic",
+            "Steampunk", "Cyberpunk", "Zen", "Whimsical", "Nostalgic"
+        ];
+
+        const mockupViews = [
+            "Front View", "Isometric View", "Top-Down (Flat Lay)", "Perspective View", 
+            "Close-Up Detail", "Floating", "Held in Hand", "Tilted Angle", "Three-Quarter View",
+            "Side Profile", "Back View", "Bottom View", "Exploded View", "Cross-Section",
+            "In Context", "Lifestyle Shot", "Group Shot", "Pattern View", "Grid View",
+            "Levitating", "Balancing", "Stacked", "Grid Layout", "Pattern Repeat", 
+            "Close-up Texture", "Edge Detail", "Inside View", "Peeking Out", "Falling",
+            "Splashing", "Hero Shot", "Macro Shot"
+        ];
+
+        const mockupMaterials = [
+            "Cardboard", "Kraft Paper", "Matte Paper", "Glossy Paper", "Plastic", "Glass", 
+            "Aluminum", "Fabric/Cotton", "Leather", "Wood", "Ceramic", "Stone", "Concrete",
+            "Marble", "Granite", "Rubber", "Silicon", "Foam", "Liquid", "Gas", "Fire", "Smoke",
+            "Velvet", "Silk", "Denim", "Linen", "Wool", "Felt", "Suede", "Vinyl", "Latex",
+            "Acrylic", "Resin", "Polycarbonate", "Carbon Fiber", "Fiberglass", "Gold", "Silver",
+            "Copper", "Bronze", "Brass", "Steel", "Iron", "Titanium", "Platinum",
+            "Recycled Paper", "Seeded Paper", "Hemp Plastic", "Mushroom Packaging", "Bamboo", 
+            "Cork", "Slate", "Terrazzo", "Obsidian", "Rose Quartz", "Amethyst", "Velour", 
+            "Fleece", "Sherpa", "Tweed", "Corduroy", "Holographic Film", "Mirror"
+        ];
+
+        const mockupFinishes = [
+            "Gold Foil Stamping", "Silver Foil", "Rose Gold Foil", "Copper Foil", "Bronze Foil", "Holographic Foil",
+            "Embossed", "Debossed", "Blind Emboss", "Blind Deboss", "Multi-level Emboss", "Sculptured Emboss",
+            "Spot UV", "Raised Spot UV", "Textured Spot UV", "Glitter Spot UV", "Matte Varnish", "Gloss Varnish", "Satin Varnish",
+            "Soft Touch / Velvet Lamination", "Matte Lamination", "Glossy Lamination", "Anti-Scuff Lamination", "Holographic Lamination",
+            "Letterpress", "Screen Printed", "Thermography (Raised Ink)", "Die Cut", "Laser Cut", "Kiss Cut",
+            "Edge Painting", "Gilded Edges", "Flocking (Velvet Texture)", "Pearlescent Finish", "Iridescent Finish",
+            "Metallic Ink", "Glow in the Dark Ink", "UV Reactive Ink", "Scratch-off Ink", "Puff Ink",
+            "Sandblasted", "Etched", "Engraved", "Carved", "Polished", "Brushed", "Anodized", "Galvanized",
+            "Powder Coated", "Painted", "Stained", "Dyed", "Bleached", "Distressed", "Weathered",
+            "Sand Texture", "Canvas Texture", "Linen Texture", "Wood Grain Texture", "Leather Texture", 
+            "Glitter", "Metallic Flakes", "Crackle Finish", "Hammered Finish"
+        ];
+
+        const mockupCompositions = [
+            "Centered", "Minimalist", "Knolling / Flat Lay", "Scattered Pattern", 
+            "Stacked", "Floating", "Symmetrical", "Asymmetrical", "Diagonal Composition",
+            "Hero Shot", "Product Grid", "Negative Space", "Golden Ratio", "Rule of Thirds",
+            "Leading Lines", "Framing", "Depth of Field", "Foreground Interest", "Background Interest",
+            "Dynamic Tension", "Static Balance", "Radial Balance", "Spiral", "Triangle", "L-Shape",
+            "S-Curve", "Z-Shape", "C-Shape", "V-Shape", "X-Shape", "Y-Shape",
+            "Fibonacci Spiral", "Chaotic", "Ordered", "Linear", "Circular", "Pyramid",
+            "Framed within Frame", "Off-Center", "Edge-to-Edge"
+        ];
+
+        const mockupDepths = [
+            "Sharp Focus", "Shallow Depth of Field (Bokeh)", "Macro Detail", 
+            "Deep Focus", "Tilt-Shift", "Soft Focus", "Motion Blur", "Rack Focus",
+            "Split Focus", "Hyperfocal Distance", "Infinity Focus",
+            "Foreground Blur", "Background Blur", "Dreamy Focus", "Gaussian Blur",
+            "Radial Blur", "Zoom Blur"
+        ];
+
+        const mockupEffects = [
+            "Long Shadows", "Soft Shadows", "Hard Shadows", "Glassy Reflection", 
+            "Water Reflection", "Gobo Light Shadows (Leaves)", "Gobo Light Shadows (Blinds)", 
+            "Prism Refraction", "Caustics", "Lens Flare", "Volumetric Fog",
+            "Light Leaks", "Film Grain", "Noise", "Vignette", "Chromatic Aberration",
+            "Bloom", "Glow", "Halation", "Distortion", "Glitch", "Pixelation",
+            "Dithering", "Posterization", "Color Grading", "Duotone", "Sepia",
+            "Black and White", "Inverted", "Solarized", "Thermal", "X-Ray",
+            "Double Exposure", "Anaglyph 3D", "Scanlines", "VHS Effect", "CRT Effect",
+            "Oil Painting Effect", "Watercolor Effect", "Sketch Effect", "Halftone Pattern"
+        ];
+        
+        const mockupCameras = [
+            "Phase One XF IQ4 150MP", "Phase One XT", "Hasselblad H6D-100c", "Hasselblad H6D-400c MS", "Hasselblad X2D 100C", 
+            "Hasselblad 907X 50C", "Fujifilm GFX 100S", "Fujifilm GFX 100 II", "Fujifilm GFX 50S II", "Fujifilm GFX 50R",
+            "Canon EOS R5", "Canon EOS R3", "Canon EOS R6 Mark II", "Canon EOS 5D Mark IV", "Canon EOS 1D X Mark III",
+            "Sony Alpha 1", "Sony A7R V", "Sony A7R IV", "Sony A7S III", "Sony A7 IV", "Sony A9 II",
+            "Nikon Z9", "Nikon Z8", "Nikon Z7 II", "Nikon D850", "Nikon D6",
+            "Leica SL2-S", "Leica SL2", "Leica S3", "Leica M11", "Leica Q3",
+            "Pentax 645Z", "Panasonic Lumix S1R", "Panasonic Lumix S5 II", "Olympus OM-1"
+        ];
+        const mockupLenses = [
+            // Macro
+            "Canon EF 100mm f/2.8L Macro IS USM", "Canon RF 100mm f/2.8L Macro IS USM", "Sony FE 90mm f/2.8 Macro G OSS", 
+            "Nikon NIKKOR Z MC 105mm f/2.8 VR S", "Nikon AF-S VR Micro-Nikkor 105mm f/2.8G IF-ED", 
+            "Sigma 105mm f/2.8 DG DN Macro Art", "Sigma 70mm f/2.8 DG Macro Art", "Tokina atx-i 100mm f/2.8 FF Macro",
+            "Fujifilm GF 120mm f/4 Macro R LM OIS WR", "Hasselblad HC 120mm Macro II", "Zeiss Milvus 100mm f/2M",
+            // Tilt-Shift
+            "Canon TS-E 135mm f/4L Macro", "Canon TS-E 90mm f/2.8L Macro", "Canon TS-E 50mm f/2.8L Macro", 
+            "Canon TS-E 24mm f/3.5L II", "Nikon PC-E Micro NIKKOR 85mm f/2.8D", "Nikon PC-E NIKKOR 24mm f/3.5D ED",
+            // Primes
+            "Zeiss Otus 55mm f/1.4", "Zeiss Otus 85mm f/1.4", "Zeiss Otus 28mm f/1.4",
+            "Sigma 85mm f/1.4 DG DN Art", "Sigma 50mm f/1.4 DG DN Art", "Sigma 35mm f/1.4 DG DN Art",
+            "Sony FE 50mm f/1.2 GM", "Sony FE 35mm f/1.4 GM", "Sony FE 85mm f/1.4 GM", "Sony FE 135mm f/1.8 GM",
+            "Canon RF 50mm f/1.2L USM", "Canon RF 85mm f/1.2L USM", "Canon EF 50mm f/1.2L USM", "Canon EF 85mm f/1.4L IS USM",
+            "Nikon NIKKOR Z 50mm f/1.2 S", "Nikon NIKKOR Z 85mm f/1.2 S", "Nikon NIKKOR Z 58mm f/0.95 S Noct",
+            "Leica APO-Summicron-SL 75mm f/2 ASPH", "Leica Summilux-SL 50mm f/1.4 ASPH",
+            "Fujifilm GF 110mm f/2 R LM WR", "Fujifilm GF 80mm f/1.7 R WR",
+            // Zooms
+            "Canon RF 24-70mm f/2.8L IS USM", "Sony FE 24-70mm f/2.8 GM II", "Nikon NIKKOR Z 24-70mm f/2.8 S"
+        ];
+        const mockupFocals = [
+            "24mm", "35mm", "50mm", "55mm", "85mm", "90mm", "100mm", "105mm", "110mm", "120mm", "135mm", "200mm"
+        ];
+        const mockupApertures = [
+            "f/1.2", "f/1.4", "f/1.8", "f/2.0", "f/2.8", "f/3.2", "f/3.5", "f/4.0", "f/4.5", "f/5.0", "f/5.6", 
+            "f/6.3", "f/7.1", "f/8.0", "f/9.0", "f/10", "f/11", "f/13", "f/14", "f/16", "f/18", "f/20", "f/22", "f/32"
+        ];
+
+        const productCameras = [
+            // Medium Format & High Res
+            "Phase One XF IQ4 150MP", "Phase One XC", "Hasselblad H6D-400c MS", "Hasselblad H6D-100c", 
+            "Hasselblad X2D 100C", "Fujifilm GFX 100 II", "Fujifilm GFX 100S", "Leica S3",
+            // Cinema Cameras
+            "Arri Alexa Mini LF", "Arri Alexa 35", "Arri Alexa 65", "Arri Amira",
+            "Red V-Raptor 8K VV", "Red Monstro 8K VV", "Red Helium 8K S35", "Red Komodo 6K", "Red Ranger Gemini 5K",
+            "Sony Venice 2", "Sony Burano", "Sony FX9", "Sony FX6", "Sony FX3",
+            "Canon C500 Mark II", "Canon C300 Mark III", "Canon C70",
+            "Blackmagic URSA Mini Pro 12K", "Blackmagic Pocket Cinema Camera 6K Pro",
+            "Panavision Millennium DXL2", "Kinefinity MAVO Edge 8K", "Z Cam E2-F6",
+            // High Speed
+            "Phantom Flex4K", "Phantom VEO 4K", "Freefly Wave",
+            // Hybrid Mirrorless
+            "Canon EOS R3", "Canon EOS R5 C", "Sony Alpha 1", "Sony A7S III", "Nikon Z9", "Panasonic Lumix S1H", "Panasonic Lumix GH6"
+        ];
+        const productLenses = [
+            // Tilt-Shift (Essential for Product)
+            "Canon TS-E 135mm f/4L Macro", "Canon TS-E 90mm f/2.8L Macro", "Canon TS-E 50mm f/2.8L Macro", "Canon TS-E 24mm f/3.5L II", "Canon TS-E 17mm f/4L",
+            "Nikon PC-E Micro NIKKOR 85mm f/2.8D", "Nikon PC-E Micro NIKKOR 45mm f/2.8D ED", "Nikon PC NIKKOR 19mm f/4E ED",
+            "Schneider Kreuznach 120mm LS Macro", "Schneider Kreuznach 80mm LS", "Schneider Kreuznach PC-TS Super-Angulon 50mm f/2.8",
+            // Macro & Probe
+            "Laowa 24mm f/14 2x Macro Probe", "Laowa 24mm T14 2x PeriProbe", "Laowa 100mm f/2.8 2x Ultra Macro APO", "Laowa 60mm f/2.8 2x Ultra-Macro",
+            "Zeiss Makro-Planar T* 100mm f/2", "Zeiss Makro-Planar T* 50mm f/2", "Zeiss Milvus 50mm f/2M",
+            "Sony FE 90mm f/2.8 Macro G OSS", "Canon RF 100mm f/2.8L Macro IS USM", "Sigma 70mm f/2.8 DG Macro Art",
+            // Cine Primes
+            "Arri Signature Prime 35mm", "Arri Signature Prime 45mm", "Arri Signature Prime 75mm",
+            "Cooke S7/i Full Frame Plus Prime 50mm", "Cooke Anamorphic /i SF 50mm", "Cooke Panchro/i Classic",
+            "Zeiss Supreme Prime 50mm", "Zeiss Master Prime 35mm", "Leica Thalia Cine Prime", "Leitz Summilux-C",
+            "Canon K-35 Vintage Prime", "Canon CN-E 50mm T1.3 L F", "Sigma Cine Prime 40mm T1.5",
+            "Atlas Orion Anamorphic 40mm", "Atlas Orion Anamorphic 65mm",
+            "Tokina Cinema Vista 50mm T1.5", "Angenieux Optimo Prime",
+            // High End Photo Primes
+            "Sony FE 50mm f/1.2 GM", "Canon RF 85mm f/1.2L USM", "Nikon NIKKOR Z 58mm f/0.95 S Noct"
+        ];
+        const productFocals = [
+            "14mm", "24mm", "35mm", "45mm", "50mm", "55mm", "85mm", "90mm", "100mm", "105mm", "120mm", "135mm", "150mm", "180mm", "200mm"
+        ];
+        const productApertures = [
+            "f/1.2 (Dreamy Bokeh)", "f/1.4 (Very Shallow)", "f/1.8 (Shallow Depth)", "f/2.0", "f/2.8 (Subject Isolation)", 
+            "f/3.2", "f/3.5", "f/4.0 (Balanced)", "f/4.5", "f/5.0", "f/5.6 (Standard)", "f/6.3", "f/7.1", 
+            "f/8.0 (Sharpest)", "f/9.0", "f/10", "f/11 (Product Standard)", "f/13", "f/14", "f/16 (Deep Depth)", 
+            "f/18", "f/20", "f/22 (Max Depth)", "f/32 (Diffraction)"
+        ];
+
+        // Product Photography Data
+        const productContexts = [
+            "Studio Solid Color Background", "Marble Podium", "Wooden Table", "Water Splash Surface", 
+            "Floating in Air", "Neon Cyberpunk City Street", "Nature Forest Floor with Moss", "Beach Sand",
+            "Luxury Silk Cloth", "Concrete Industrial Surface", "Kitchen Countertop", "Bathroom Vanity",
+            "Abstract Geometric Shapes", "Cloud Scape", "Space/Galaxy Background", "Black Mirror Surface",
+            "White Infinity Cove", "Terrazzo Surface", "Velvet Drapes", "Satin Sheets", "Fur Rug",
+            "Leather Sofa", "Glass Shelf", "Metal Grate", "Brick Wall", "Stone Pathway", "Grass Field",
+            "Flower Bed", "Snowy Landscape", "Desert Dunes", "Mountain Peak", "Underwater", "Skyline",
+            "Cityscape", "Interior Design", "Architecture", "Automotive", "Fashion", "Food", "Technology"
+        ];
+
+        const productLighting = [
+            "Softbox Studio Lighting", "Hard Rim Light", "Natural Window Light", "God Rays",
+            "Neon Blue/Pink Lighting", "Golden Hour Sun", "Dramatic Chiaroscuro", "Ring Light",
+            "Cinematic Volumetric Fog", "Bioluminescent Glow", "Split Lighting", "Butterfly Lighting",
+            "Product Photography Lighting", "Three-Point Lighting", "High Key", "Low Key",
+            "Rembrandt Lighting", "Loop Lighting", "Broad Lighting", "Short Lighting", "Paramount Lighting",
+            "Badger Lighting", "Clamshell Lighting", "Kicker Light", "Fill Light", "Key Light",
+            "Bounce Light", "Practical Lighting", "Motivated Lighting", "Available Light",
+            "Specular Highlight", "Diffuse Light", "Ambient Light", "Flash Photography", "Strobe Lighting"
+        ];
+
+        const productOutdoorLighting = [
+            "Golden Hour", "Blue Hour", "Midday Sun", "Overcast / Cloudy", "Direct Sunlight", 
+            "Dappled Sunlight (Through Trees)", "Sunset", "Sunrise", "Twilight / Dusk", "Dawn", 
+            "Moonlight", "Starlight", "Aurora Borealis", "Stormy Sky", "Foggy / Misty", 
+            "Hazy Afternoon", "Clear Sky", "Rainy Atmosphere", "Snowy Reflection", 
+            "City Night Glow", "Streetlights", "Bioluminescent Nature", "Firelight", 
+            "Underwater Light Rays", "Desert Sun", "Mountain Alpenglow", "Tropical Sun"
+        ];
+
+        const productAngles = [
+            "Front Level View", "Top-Down (Flat Lay)", "Low Angle Hero Shot", "45-Degree Isometric",
+            "Close-Up Macro", "Dutch Angle", "Profile Side View", "Worm's Eye View", "Bird's Eye View",
+            "Overhead", "Underneath", "Rear View", "Three-Quarter View", "Point of View", "Eye Level",
+            "High Angle", "Low Angle", "Tilted", "Canted", "Oblique", "Straight On"
+        ];
+
+        const productShots = [
+            "Full Body Shot", "Macro Detail Shot", "Wide Angle Context", "Telephoto Compression",
+            "Bokeh Depth of Field", "Sharp Focus Everywhere", "Tilt-Shift", "Medium Shot", "Close Up",
+            "Extreme Close Up", "Long Shot", "Extreme Long Shot", "Establishing Shot", "Master Shot",
+            "Insert Shot", "Cutaway", "Reaction Shot", "Reverse Angle", "Two Shot", "Group Shot",
+            "Over the Shoulder", "Point of View"
+        ];
+
+        const productProps = [
+            "None", "Water Drops", "Smoke/Fog", "Tropical Leaves", "Flower Petals",
+            "Coffee Beans", "Tech Gadgets", "Office Supplies", "Makeup Brushes",
+            "Ice Cubes", "Fire/Sparks", "Floating Bubbles", "Geometric Prisms", "Rocks and Stones",
+            "Gold Dust", "Feathers", "Confetti", "Ribbons", "Balloons", "Candles", "Lights",
+            "Mirrors", "Glassware", "Silverware", "Dishes", "Utensils", "Napkins", "Tablecloths",
+            "Placemats", "Coasters", "Trays", "Baskets", "Bowls", "Vases", "Pots", "Pans",
+            "Bottles", "Jars", "Cans", "Boxes", "Bags", "Wrappers", "Tags", "Labels", "Stickers"
+        ];
+
+        const productVibes = [
+            "Minimalist", "Luxury/Elegant", "Fresh/Organic", "High-Tech/Futuristic",
+            "Energetic/Sporty", "Vintage/Retro", "Dark/Moody", "Playful/Colorful",
+            "Industrial", "Rustic", "Clean/Medical", "Bohemian", "Eclectic", "Traditional",
+            "Contemporary", "Transitional", "Mid-Century Modern", "Scandi", "Coastal",
+            "Farmhouse", "Shabby Chic", "French Country", "Hollywood Regency", "Art Deco",
+            "Asian Zen", "Feng Shui", "Wabi Sabi", "Hygge", "Lagom", "Maximalist"
+        ];
+
+        const productMaterials = [
+            "Matte Finish", "Glossy Reflection", "Brushed Metal", "Velvet Fabric", "Satin Cloth",
+            "Rough Concrete", "Polished Marble", "Natural Wood", "Sand Texture", "Water Surface",
+            "Ceramic", "Glass", "Acrylic", "Leather", "Silk", "Stone", "Plastic", "Rubber",
+            "Silicon", "Foam", "Paper", "Cardboard", "Kraft", "Cork", "Bamboo", "Rattan",
+            "Wicker", "Jute", "Sisal", "Hemp", "Cotton", "Linen", "Wool", "Felt", "Fleece",
+            "Fur", "Shearling", "Suede", "Velour", "Chenille", "Corduroy", "Tweed", "Twill"
+        ];
+
+        const productColors = [
+            "Neutral / Clean", "Warm / Golden", "Cool / Blue", "Vibrant / Pop", "Pastel / Soft",
+            "Dark / Moody", "High Contrast", "Monochrome", "Complimentary Colors", "Analogous Colors",
+            "Triadic Colors", "Split-Complementary", "Tetradic Colors", "Square Colors",
+            "Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet", "Purple", "Pink",
+            "Brown", "Black", "White", "Gray", "Silver", "Gold", "Copper", "Bronze", "Platinum"
+        ];
+
+        // Graphic Design Data
+        const graphicData = {
+            formats: [
+                "Poster Design", "Social Media Flyer", "Instagram Post", "Instagram Story", 
+                "Presentation Slide", "YouTube Thumbnail", "Website Banner", "Book Cover", 
+                "Album Art", "Infographic", "UI Interface", "App Screen", "Business Card", 
+                "T-Shirt Design", "Sticker", "Billboard", "Magazine Cover", "Podcast Cover Art", 
+                "Twitch Stream Overlay", "Email Newsletter Header", "Product Packaging Box", 
+                "Wine Label Design", "Streetwear Hoodie Print", "Skateboard Deck Art", 
+                "Tote Bag Design", "Event Ticket", "Menu Design", "Resume / CV Design", 
+                "Zoom Background", "NFT Art Collection", "Game UI HUD", "Icon Set", 
+                "Favicon", "Social Media Kit", "Brand Moodboard"
+            ],
+            styles: [
+                "Minimalist", "Brutalist", "Swiss Style", "Bauhaus", "Corporate Memphis",
+                "Cyberpunk", "Retro / Vintage 90s", "Y2K Aesthetic", "Abstract 3D",
+                "Typographic", "Collage / Mixed Media", "Flat Design", "Neomorphism",
+                "Glassmorphism", "Grunge", "Pop Art", "Art Deco", "Psychedelic",
+                "Paper Cutout", "Isometric", "Vaporwave", "Synthwave", "Industrial",
+                "Art Nouveau", "Surrealism", "Dadaism", "Constructivism", "De Stijl", 
+                "Memphis Design", "Steampunk", "Biopunk", "Solarpunk", "Acid Graphics", 
+                "Anti-Design", "Maximalism", "Risograph Print", "Ukiyo-e", "Low Poly", 
+                "Voxel Art", "Claymorphism", "Skeuomorphism", "Chalkboard Art", "Watercolor", 
+                "Oil Painting", "Line Art", "Doodle Style", "Kawaii", "Gothic", "Victorian", 
+                "Mid-Century Modern", "Space Age", "Atomic Age"
+            ],
+            compositions: [
+                "Grid System Layout", "Asymmetrical Balance", "Centered Composition",
+                "Rule of Thirds", "Negative Space Heavy", "Diagonal Layout",
+                "Golden Ratio", "Radial Composition", "Split Screen", "Framed",
+                "Chaotic / Scattered", "Minimalist Whitespace", "Layered Depth",
+                "Z-Pattern Layout", "F-Pattern Layout", "Modular Grid", "Hierarchical Grid", 
+                "Symmetrical Balance", "Dynamic Tension", "Leading Lines", "Perspective Depth", 
+                "Overlapping Layers", "Collage Layout", "Typographic Hierarchy", "Full Bleed Image", 
+                "Bordered Layout", "Circular Mask", "Geometric Pattern Background", 
+                "Isometric Grid", "Fibonacci Spiral"
+            ],
+            typography: [
+                "Bold Sans-Serif", "Elegant Serif", "Futuristic Tech Font", "Handwritten / Script",
+                "Vintage Lettering", "Experimental Typography", "Kinetic Typography",
+                "3D Bubble Text", "Distorted Glitch Text", "Minimal Thin Type",
+                "Heavy Impact Font", "Gothic Blackletter", "Slab Serif", "Monospace Code", 
+                "Variable Font", "Liquid Metal Type", "Chrome Type", "Neon Signage", 
+                "Graffiti Tag", "Calligraphy", "Brush Script", "Pixel Font", 
+                "Retro 70s Cooper Black", "Stencil Font", "Typewriter", "Chalk Lettering", 
+                "Balloon Type", "Interlocked Letters", "Stacked Typography", "Outlined Text", 
+                "Gradient Text"
+            ],
+            elements: [
+                "Geometric Shapes", "3D Abstract Objects", "Paper Texture Overlay",
+                "Noise / Film Grain", "Halftone Pattern", "Liquid Gradients",
+                "Wireframe Mesh", "Floating Particles", "Botanical Elements",
+                "Tech Interface Elements", "Brush Strokes", "Collage Cutouts",
+                "Glass Refraction", "Metallic Textures", "Neon Glow Effects",
+                "Stickers & Decals", "Barcode & QR Codes", "Warning Labels", "Plastic Wrap Texture", 
+                "Tape Strips", "Ripped Paper Edges", "Spray Paint Drips", "Lens Flares", 
+                "Chromatic Aberration", "Glitch Artifacts", "Data Visualization Charts", 
+                "Abstract Blobs", "Memphis Patterns", "Grid Lines", "Crosshairs", 
+                "Arrows & Pointers", "Speech Bubbles", "Emojis", "Confetti", "Smoke & Fog", 
+                "Water Droplets", "Fire & Sparks"
+            ],
+            themes: [
+                "Corporate / Professional", "Music & Entertainment", "Tech & Startup", 
+                "Nature & Eco-Friendly", "Health & Wellness", "Food & Culinary", 
+                "Travel & Tourism", "Fashion & Lifestyle", "Sports & Athletics", 
+                "Gaming & Esports", "Education & Learning", "Real Estate & Property", 
+                "Holiday & Seasonal", "Retail & E-commerce", "Non-Profit & Charity", 
+                "Luxury & Premium", "Urban & Streetwear", "Kids & Family", 
+                "Wedding & Celebration", "Political & Social"
+            ],
+            industries: [
+                "Technology & SaaS", "Fashion & Apparel", "Food & Beverage", "Health & Wellness", 
+                "Real Estate", "Finance & Banking", "Education & E-Learning", "Entertainment & Media", 
+                "Travel & Hospitality", "Automotive", "Beauty & Cosmetics", "Gaming & Esports", 
+                "Non-Profit & Charity", "Retail & E-commerce", "Architecture & Interior", 
+                "Legal & Corporate", "Sports & Fitness", "Art & Design"
+            ],
+            occasions: [
+                "Summer Sale", "Black Friday / Cyber Monday", "Christmas / Holiday Season", 
+                "New Year's Eve", "Valentine's Day", "Halloween", "Back to School", 
+                "Product Launch", "Company Anniversary", "Conference / Summit", "Webinar Event", 
+                "Spring Collection", "Winter Special", "Earth Day", "Music Festival", 
+                "Grand Opening", "Flash Sale", "Hiring / Recruitment"
+            ],
+            boosters: [
+                "Vector Style", "Adobe Illustrator", "Behance", "Dribbble", "Award Winning",
+                "High Resolution", "8k", "Clean Lines", "Professional Design", "Visual Hierarchy",
+                "Trending", "Masterpiece", "Detailed", "Sharp Focus", "Studio Lighting",
+                "Unreal Engine 5 Render", "Octane Render", "C4D", "Blender 3D", "Maya", 
+                "ZBrush", "Houdini", "Substance Designer", "V-Ray", "Redshift", "Corona Render", 
+                "Arnold Render", "KeyShot", "Marmoset Toolbag", "Unity Engine", "CryEngine", 
+                "Godot", "Photorealistic", "Hyperrealistic", "Surreal", "Cinematic Composition", 
+                "Perfect Color Grading", "Post-Processing", "Color Correction", "Depth of Field", 
+                "Motion Blur", "Anti-Aliasing", "Texture Mapping", "Shading", "Lighting Effects", 
+                "Visual Effects (VFX)", "CGI", "Digital Art", "Concept Art", "Matte Painting"
+            ]
+        };
+
+        const randomSubjects = [
+            "A futuristic astronaut exploring a crystal cave",
+            "A cozy cottage in a magical forest with glowing mushrooms",
+            "A cyberpunk street food vendor in Tokyo at night",
+            "An ancient dragon sleeping on a pile of gold coins",
+            "A portrait of a cyborg woman with neon hair",
+            "A steampunk airship flying over a Victorian city",
+            "A serene underwater city of merfolk",
+            "A lone wanderer in a vast, post-apocalyptic desert",
+            "A majestic lion with a mane of fire",
+            "A floating island with waterfalls cascading into the clouds",
+            "A robot playing chess with an old man in a park",
+            "A giant turtle carrying a city on its back",
+            "A spaceship landing on a colorful alien planet",
+            "A wizard casting a spell in a library of flying books",
+            "A knight fighting a shadow monster in a dark dungeon",
+            "A fairy dancing on a lily pad in a moonlit pond"
+        ];
+
+        // State
+        let selectedStyles = [];
+        let selectedBoosters = [];
+        let selectedGraphicBoosters = [];
+        let currentRatio = "";
+        let favorites = [];
+        let history = [];
+        let currentModel = "mj"; 
+        let currentMode = "image"; // 'image' or 'mockup'
+
+        // Init
+        function init() {
+            // Sort all data arrays alphabetically
+            styles.sort();
+            lighting.sort();
+            cinematography.sort();
+            moods.sort();
+            compositions.sort();
+            cameraAngles.sort();
+            cameraLenses.sort();
+            boosters.sort();
+            artists.sort();
+            colors.sort();
+
+            mockupEnvironments.sort();
+            mockupStyles.sort();
+            mockupViews.sort();
+            mockupMaterials.sort();
+            mockupFinishes.sort();
+            mockupCompositions.sort();
+            mockupDepths.sort();
+            mockupEffects.sort();
+            Object.values(mockupCategories).forEach(arr => arr.sort());
+            mockupCameras.sort();
+            mockupLenses.sort();
+            // Focals and Apertures usually better kept in logical order, not alphabetical
+
+            productContexts.sort();
+            productLighting.sort();
+            productOutdoorLighting.sort();
+            productAngles.sort();
+            productShots.sort();
+            if (productProps.includes("None")) productProps.splice(productProps.indexOf("None"), 1);
+            productProps.sort();
+            productVibes.sort();
+            productMaterials.sort();
+            productColors.sort();
+            productCameras.sort();
+            productLenses.sort();
+            
+            // Sort Graphic Data
+            graphicData.formats.sort();
+            graphicData.styles.sort();
+            graphicData.compositions.sort();
+            graphicData.typography.sort();
+            graphicData.elements.sort();
+            graphicData.themes.sort();
+            graphicData.industries.sort();
+            graphicData.occasions.sort();
+            graphicData.boosters.sort();
+
+            // Populate Styles
+            const styleGrid = document.getElementById('styleGrid');
+            styles.forEach(style => {
+                const btn = document.createElement('button');
+                btn.className = 'tag-btn py-2 px-3 text-center';
+                btn.textContent = style;
+                btn.onclick = () => toggleStyle(btn, style);
+                styleGrid.appendChild(btn);
+            });
+
+            // Populate Lighting
+            const lightSelect = document.getElementById('lightingSelect');
+            lighting.forEach(l => {
+                const opt = document.createElement('option');
+                opt.value = l;
+                opt.textContent = l;
+                lightSelect.appendChild(opt);
+            });
+
+            // Populate Cinematography 
+            const cinSelect = document.getElementById('cinematographySelect');
+            cinematography.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                cinSelect.appendChild(opt);
+            });
+
+
+            // Populate Camera Angle
+            const camAngleSelect = document.getElementById('cameraAngleSelect');
+            cameraAngles.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                camAngleSelect.appendChild(opt);
+            });
+
+            // Populate Mood
+            const moodSelect = document.getElementById('moodSelect');
+            moods.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                moodSelect.appendChild(opt);
+            });
+
+            // Populate Composition
+            const compSelect = document.getElementById('compositionSelect');
+            compositions.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                compSelect.appendChild(opt);
+            });
+
+            // Populate Camera Lens
+            const camLensSelect = document.getElementById('cameraLensSelect');
+            cameraLenses.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                camLensSelect.appendChild(opt);
+            });
+
+            // Populate Boosters
+            const boostContainer = document.getElementById('boosterContainer');
+            boosters.forEach(b => {
+                const btn = document.createElement('button');
+                btn.className = 'tag-btn rounded-full py-1 px-3 text-xs';
+                btn.textContent = b;
+                btn.onclick = () => toggleBooster(btn, b);
+                boostContainer.appendChild(btn);
+            });
+
+            // Populate Artists
+            const artistSelect = document.getElementById('artistSelect');
+            artists.forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = a;
+                opt.textContent = a;
+                artistSelect.appendChild(opt);
+            });
+
+            // Populate Colors
+            const colorSelect = document.getElementById('colorSelect');
+            colors.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                colorSelect.appendChild(opt);
+            });
+
+            // Populate Mockup Dropdowns
+            const populate = (id, arr) => {
+                const sel = document.getElementById(id);
+                sel.innerHTML = ''; // Clear existing
+                const def = document.createElement('option');
+                def.value = ""; def.textContent = "None";
+                sel.appendChild(def);
+                
+                // Handle object keys if array is not array
+                if (!Array.isArray(arr)) arr = Object.keys(arr);
+
+                arr.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item; opt.textContent = item;
+                    sel.appendChild(opt);
+                });
+            };
+
+            populate('mockupCategorySelect', Object.keys(mockupCategories).sort());
+            document.getElementById('mockupCategorySelect').value = "All"; // Default
+            populate('mockupItemSelect', mockupCategories["All"]);
+            populate('mockupEnvSelect', mockupEnvironments);
+            populate('mockupStyleSelect', mockupStyles);
+            populate('mockupViewSelect', mockupViews);
+            populate('mockupMaterialSelect', mockupMaterials);
+            populate('mockupFinishSelect', mockupFinishes);
+            populate('mockupLightingSelect', lighting); // Reuse lighting
+            populate('mockupCompositionSelect', mockupCompositions);
+            populate('mockupDepthSelect', mockupDepths);
+            populate('mockupEffectSelect', mockupEffects);
+            populate('mockupColorSelect', colors);
+            populate('imageCameraSelect', mockupCameras);
+            populate('imageLensModelSelect', mockupLenses);
+            populate('imageFocalSelect', mockupFocals);
+            populate('imageApertureSelect', mockupApertures);
+
+            // Product Populate
+            populate('prodContextSelect', productContexts);
+            populate('prodLightingSelect', productLighting);
+            populate('prodOutdoorLightingSelect', productOutdoorLighting);
+            populate('prodAngleSelect', productAngles);
+            populate('prodShotSelect', productShots);
+            populate('prodPropsSelect', productProps);
+            populate('prodVibeSelect', productVibes);
+            populate('prodMaterialSelect', productMaterials);
+            populate('prodColorSelect', productColors);
+            populate('prodCameraSelect', productCameras);
+            populate('prodLensSelect', productLenses);
+            populate('prodFocalSelect', productFocals);
+            populate('prodApertureSelect', productApertures);
+
+            // Graphic Design Populate
+            populate('graphicFormatSelect', graphicData.formats);
+            populate('graphicStyleSelect', graphicData.styles);
+            populate('graphicCompositionSelect', graphicData.compositions);
+            populate('graphicTypographySelect', graphicData.typography);
+            populate('graphicColorSelect', colors); // Reuse colors
+            populate('graphicElementSelect', graphicData.elements);
+            populate('graphicThemeSelect', graphicData.themes);
+            populate('graphicIndustrySelect', graphicData.industries);
+            populate('graphicOccasionSelect', graphicData.occasions);
+            populate('graphicMoodSelect', moods); // Reuse moods
+
+            // Populate Graphic Boosters
+            const graphicBoosterContainer = document.getElementById('graphicBoosterContainer');
+            graphicData.boosters.forEach(b => {
+                const btn = document.createElement('button');
+                btn.className = 'tag-btn rounded-full py-1 px-3 text-xs';
+                btn.textContent = b;
+                btn.onclick = () => {
+                    toggleGraphicBooster(btn, b);
+                };
+                graphicBoosterContainer.appendChild(btn);
+            });
+
+            // Mockup Listeners
+            ['mockupContent', 'mockupCategorySelect', 'mockupItemSelect', 'mockupEnvSelect', 'mockupStyleSelect', 
+             'mockupViewSelect', 'mockupMaterialSelect', 'mockupFinishSelect', 'mockupLightingSelect',
+             'mockupCompositionSelect', 'mockupDepthSelect', 'mockupEffectSelect', 'mockupColorSelect'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener(id.includes('Content') ? 'input' : 'change', generatePrompt);
+            });
+            
+            // Image Camera Gear Listeners
+            ['imageCameraSelect', 'imageLensModelSelect', 'imageFocalSelect', 'imageApertureSelect'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener('change', generatePrompt);
+            });
+
+            // Product Listeners
+            ['productInput', 'prodContextSelect', 'prodLightingSelect', 'prodAngleSelect', 'prodShotSelect', 
+             'prodPropsSelect', 'prodVibeSelect', 'prodMaterialSelect', 'prodColorSelect', 'prodOutdoorLightingSelect',
+             'prodCameraSelect', 'prodLensSelect', 'prodFocalSelect', 'prodApertureSelect'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener(id.includes('Input') ? 'input' : 'change', generatePrompt);
+            });
+
+            // Graphic Design Listeners
+            ['graphicConceptInput', 'graphicFormatSelect', 'graphicStyleSelect', 'graphicCompositionSelect', 
+             'graphicTypographySelect', 'graphicColorSelect', 'graphicElementSelect', 'graphicThemeSelect', 
+             'graphicIndustrySelect', 'graphicOccasionSelect', 'graphicMoodSelect', 'graphicLocationInput',
+             'graphicAudienceInput', 'graphicBrandInput', 'graphicBrandNameInput', 'graphicHeadlineInput', 'graphicSubheadlineInput', 'graphicCtaInput', 'graphicTaglineInput', 
+             'graphicDateInput', 'graphicTimeInput', 'graphicVenueInput', 'graphicPriceInput', 'graphicContactInput', 'graphicSocialInput', 'graphicDisclaimerInput',
+             'graphicRefUrl', 'graphicRefMode', 'graphicRefWeight'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener(id.includes('Input') ? 'input' : 'change', generatePrompt);
+            });
+
+            // Ratio Buttons
+            document.querySelectorAll('.ratio-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.ratio-btn').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    btn.classList.add('active');
+                    currentRatio = btn.dataset.ratio;
+                    generatePrompt();
+                });
+            });
+            // Set default active ratio button
+            const defaultRatioBtn = document.querySelector('.ratio-btn[data-ratio=""]');
+            if(defaultRatioBtn) defaultRatioBtn.classList.add('active');
+
+            // Listeners
+            document.getElementById('subjectInput').addEventListener('input', generatePrompt);
+            document.getElementById('lightingSelect').addEventListener('change', generatePrompt);
+            document.getElementById('cameraAngleSelect').addEventListener('change', generatePrompt);
+            document.getElementById('cameraLensSelect').addEventListener('change', generatePrompt);
+            document.getElementById('cinematographySelect').addEventListener('change', generatePrompt);
+            document.getElementById('moodSelect').addEventListener('change', generatePrompt);
+            document.getElementById('compositionSelect').addEventListener('change', generatePrompt);
+            document.getElementById('artistSelect').addEventListener('change', generatePrompt);
+            document.getElementById('colorSelect').addEventListener('change', generatePrompt);
+            document.getElementById('negativePrompt').addEventListener('input', generatePrompt);
+            
+            const chaosSlider = document.getElementById('chaosSlider');
+            const stylizeSlider = document.getElementById('stylizeSlider');
+            const weightSlider = document.getElementById('weightSlider');
+            const prodWeightSlider = document.getElementById('prodWeightSlider');
+
+            chaosSlider.addEventListener('input', () => { document.getElementById('chaosValue').textContent = chaosSlider.value; generatePrompt(); });
+            stylizeSlider.addEventListener('input', () => { document.getElementById('stylizeValue').textContent = stylizeSlider.value; generatePrompt(); });
+            weightSlider.addEventListener('input', () => { document.getElementById('weightValue').textContent = weightSlider.value; generatePrompt(); });
+            prodWeightSlider.addEventListener('input', () => { document.getElementById('prodWeightValue').textContent = prodWeightSlider.value; generatePrompt(); });
+
+            // Load favorites from local storage
+            loadFavorites();
+
+            // Initial prompt generation
+            generatePrompt();
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const imgBtn = document.getElementById('mode-image');
+            const mockBtn = document.getElementById('mode-mockup');
+            const prodBtn = document.getElementById('mode-product');
+            const graphBtn = document.getElementById('mode-graphic');
+            const imgCtrls = document.getElementById('imageControls');
+            const mockCtrls = document.getElementById('mockupControls');
+            const prodCtrls = document.getElementById('productControls');
+            const graphCtrls = document.getElementById('graphicControls');
+
+            // Reset all
+            [imgBtn, mockBtn, prodBtn, graphBtn].forEach(b => b.classList.remove('active'));
+            [imgCtrls, mockCtrls, prodCtrls, graphCtrls].forEach(c => c.classList.add('hidden'));
+
+            // Activate selected
+            if (mode === 'image') { imgBtn.classList.add('active'); imgCtrls.classList.remove('hidden'); }
+            else if (mode === 'mockup') { mockBtn.classList.add('active'); mockCtrls.classList.remove('hidden'); }
+            else if (mode === 'product') { prodBtn.classList.add('active'); prodCtrls.classList.remove('hidden'); }
+            else if (mode === 'graphic') { graphBtn.classList.add('active'); graphCtrls.classList.remove('hidden'); }
+            
+            generatePrompt();
+        }
+
+        function handleImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                    document.getElementById('uploadPlaceholder').classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function toggleStyle(btn, style) {
+            if (selectedStyles.includes(style)) {
+                selectedStyles = selectedStyles.filter(s => s !== style);
+                btn.classList.remove('active');
+            } else {
+                selectedStyles.push(style);
+                btn.classList.add('active');
+            }
+            generatePrompt();
+        }
+
+        function toggleBooster(btn, booster) {
+            if (selectedBoosters.includes(booster)) {
+                selectedBoosters = selectedBoosters.filter(b => b !== booster);
+                btn.classList.remove('active');
+            } else {
+                selectedBoosters.push(booster);
+                btn.classList.add('active');
+            }
+            generatePrompt();
+        }
+
+        function toggleGraphicBooster(btn, booster) {
+            if (selectedGraphicBoosters.includes(booster)) {
+                selectedGraphicBoosters = selectedGraphicBoosters.filter(b => b !== booster);
+                btn.classList.remove('active');
+            } else {
+                selectedGraphicBoosters.push(booster);
+                btn.classList.add('active');
+            }
+            generatePrompt();
+        }
+
+        function filterMockupItems() {
+            const cat = document.getElementById('mockupCategorySelect').value || "All";
+            const items = mockupCategories[cat];
+            const sel = document.getElementById('mockupItemSelect');
+            sel.innerHTML = '';
+            const def = document.createElement('option');
+            def.value = ""; def.textContent = "None";
+            sel.appendChild(def);
+            items.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item; opt.textContent = item;
+                sel.appendChild(opt);
+            });
+            generatePrompt();
+        }
+
+        function generateMockupPrompt() {
+            const content = document.getElementById('mockupContent').value.trim();
+            const item = document.getElementById('mockupItemSelect').value;
+            const material = document.getElementById('mockupMaterialSelect').value;
+            const finish = document.getElementById('mockupFinishSelect').value;
+            const view = document.getElementById('mockupViewSelect').value;
+            const env = document.getElementById('mockupEnvSelect').value;
+            const lighting = document.getElementById('mockupLightingSelect').value;
+            const style = document.getElementById('mockupStyleSelect').value;
+            const composition = document.getElementById('mockupCompositionSelect').value;
+            const depth = document.getElementById('mockupDepthSelect').value;
+            const effect = document.getElementById('mockupEffectSelect').value;
+            const color = document.getElementById('mockupColorSelect').value;
+            
+            let parts = [];
+            
+            // Core construction
+            if (content) parts.push(`Design of ${content}`);
+            if (item) parts.push(`applied on a ${item}`);
+            else if (content) parts.push("on a mockup surface");
+            
+            // Details
+            if (material) parts.push(`made of ${material}`);
+            if (finish) parts.push(`with ${finish}`);
+            
+            // Scene
+            if (view) parts.push(`${view}`);
+            if (env) parts.push(`set in ${env}`);
+            
+            // Composition & Depth
+            if (composition) parts.push(composition);
+            if (depth) parts.push(depth);
+            
+            // Atmosphere
+            if (lighting) parts.push(lighting);
+            if (style) parts.push(style);
+            if (effect) parts.push(effect);
+            if (color) parts.push(`Brand Palette: ${color}`);
+            
+            // Tech specs for realism
+            parts.push("Professional Product Photography, High Resolution, 8k, Sharp Focus, Photorealistic");
+
+            let finalString = parts.join(', ');
+            if (currentRatio) finalString += ` ${currentRatio}`;
+            const negative = document.getElementById('negativePrompt').value.trim();
+            if (negative) finalString += ` --no ${negative}`;
+            
+            const output = document.getElementById('finalPrompt');
+            output.value = finalString;
+            document.getElementById('tokenCount').textContent = `${finalString.length} chars`;
+        }
+
+        function generateProductPrompt() {
+            const product = document.getElementById('productInput').value.trim();
+            const context = document.getElementById('prodContextSelect').value;
+            const lighting = document.getElementById('prodLightingSelect').value;
+            const outdoorLighting = document.getElementById('prodOutdoorLightingSelect').value;
+            const angle = document.getElementById('prodAngleSelect').value;
+            const shot = document.getElementById('prodShotSelect').value;
+            const props = document.getElementById('prodPropsSelect').value;
+            const vibe = document.getElementById('prodVibeSelect').value;
+            const material = document.getElementById('prodMaterialSelect').value;
+            const color = document.getElementById('prodColorSelect').value;
+            const camera = document.getElementById('prodCameraSelect').value;
+            const lens = document.getElementById('prodLensSelect').value;
+            const focal = document.getElementById('prodFocalSelect').value;
+            const aperture = document.getElementById('prodApertureSelect').value;
+            const iw = document.getElementById('prodWeightSlider').value;
+
+            let parts = [];
+            
+            if (product) parts.push(`Commercial Product Photography of ${product}`);
+            else parts.push("Commercial Product Photography");
+
+            if (context) parts.push(`placed on ${context}`);
+            if (lighting) parts.push(lighting);
+            if (outdoorLighting) parts.push(outdoorLighting);
+            if (angle) parts.push(angle);
+            if (shot) parts.push(shot);
+            if (props && props !== "None") parts.push(`surrounded by ${props}`);
+            if (vibe) parts.push(`${vibe} style`);
+            if (material) parts.push(`Background texture: ${material}`);
+            if (color) parts.push(`Color Grading: ${color}`);
+
+            // Camera Gear
+            if (camera) parts.push(`Shot on ${camera}`);
+            if (lens) parts.push(`Lens: ${lens}`);
+            if (focal) parts.push(`Focal Length: ${focal}`);
+            if (aperture) parts.push(`Aperture: ${aperture}`);
+
+            parts.push("High Resolution, 8k, Sharp Focus, Professional Advertising Shot, Highly Detailed, Photorealistic, Unreal Engine 5 Render");
+            
+            if (iw != 1) parts.push(`--iw ${iw}`);
+
+            let finalString = parts.join(', ');
+            if (currentRatio) finalString += ` ${currentRatio}`;
+            const negative = document.getElementById('negativePrompt').value.trim();
+            if (negative) finalString += ` --no ${negative}`;
+            document.getElementById('finalPrompt').value = finalString;
+            document.getElementById('tokenCount').textContent = `${finalString.length} chars`;
+        }
+
+        function generateGraphicPrompt() {
+            const concept = document.getElementById('graphicConceptInput').value.trim();
+            const format = document.getElementById('graphicFormatSelect').value;
+            const audience = document.getElementById('graphicAudienceInput').value.trim();
+            const brand = document.getElementById('graphicBrandInput').value.trim();
+            const industry = document.getElementById('graphicIndustrySelect').value;
+            const occasion = document.getElementById('graphicOccasionSelect').value;
+            const mood = document.getElementById('graphicMoodSelect').value;
+            const location = document.getElementById('graphicLocationInput').value.trim();
+            
+            const brandName = document.getElementById('graphicBrandNameInput').value.trim();
+            const headline = document.getElementById('graphicHeadlineInput').value.trim();
+            const subheadline = document.getElementById('graphicSubheadlineInput').value.trim();
+            const cta = document.getElementById('graphicCtaInput').value.trim();
+            const tagline = document.getElementById('graphicTaglineInput').value.trim();
+            const date = document.getElementById('graphicDateInput').value.trim();
+            const time = document.getElementById('graphicTimeInput').value.trim();
+            const venue = document.getElementById('graphicVenueInput').value.trim();
+            const price = document.getElementById('graphicPriceInput').value.trim();
+            const contact = document.getElementById('graphicContactInput').value.trim();
+            const social = document.getElementById('graphicSocialInput').value.trim();
+            const disclaimer = document.getElementById('graphicDisclaimerInput').value.trim();
+
+            const style = document.getElementById('graphicStyleSelect').value;
+            const composition = document.getElementById('graphicCompositionSelect').value;
+            const typography = document.getElementById('graphicTypographySelect').value;
+            const color = document.getElementById('graphicColorSelect').value;
+            const element = document.getElementById('graphicElementSelect').value;
+            const theme = document.getElementById('graphicThemeSelect').value;
+            
+            const refUrl = document.getElementById('graphicRefUrl').value.trim();
+            const refMode = document.getElementById('graphicRefMode').value;
+            const refWeight = document.getElementById('graphicRefWeight').value;
+
+            let parts = [];
+
+            // 1. Subject / Core
+            let core = format ? `Professional ${format}` : "Graphic Design";
+            if (industry) core += ` for the ${industry} industry`;
+            if (audience) core += ` targeted at ${audience}`;
+            parts.push(core);
+
+            if (concept) parts.push(`featuring ${concept}`);
+            
+            // 2. Content & Context
+            if (occasion) parts.push(`themed around ${occasion}`);
+            
+            // Text Content
+            let textContent = [];
+            if (headline) textContent.push(`Headline: "${headline}"`);
+            if (subheadline) textContent.push(`Subtext: "${subheadline}"`);
+            if (tagline) textContent.push(`Tagline: "${tagline}"`);
+            if (cta) textContent.push(`CTA: "${cta}"`);
+            if (date) textContent.push(`Date: "${date}"`);
+            if (time) textContent.push(`Time: "${time}"`);
+            if (venue) textContent.push(`Venue: "${venue}"`);
+            if (price) textContent.push(`Price/Offer: "${price}"`);
+            if (contact) textContent.push(`Contact: "${contact}"`);
+            if (social) textContent.push(`Social: "${social}"`);
+            if (disclaimer) textContent.push(`Info: "${disclaimer}"`);
+            if (brandName) textContent.push(`Brand Name: "${brandName}"`);
+            if (textContent.length > 0) parts.push(`Text Content: [${textContent.join(', ')}]`);
+
+            if (brand) parts.push(`reflecting ${brand} brand identity`);
+            if (mood) parts.push(`evoking a ${mood} mood`);
+            if (location) parts.push(`set in ${location}`);
+
+            // 3. Style & Vibe
+            if (style) parts.push(`${style} style`);
+            if (composition) parts.push(`Layout: ${composition}`);
+            if (typography) parts.push(`Typography: ${typography}`);
+            if (color) parts.push(`Color Palette: ${color}`);
+            if (element) parts.push(`Elements: ${element}`);
+            if (theme) parts.push(`Theme: ${theme}`);
+
+            // 3. Boosters
+            if (selectedGraphicBoosters.length > 0) {
+                parts.push(selectedGraphicBoosters.join(', '));
+            }
+
+            // 4. Parameters & Reference Logic
+            let paramString = "";
+            
+            if (refUrl) {
+                if (refMode === 'sref') {
+                    paramString += ` --sref ${refUrl}`;
+                    if (refWeight === 'low') paramString += ` --sw 50`;
+                    if (refWeight === 'high') paramString += ` --sw 500`;
+                    if (refWeight === 'max') paramString += ` --sw 1000`;
+                } else if (refMode === 'cref') {
+                    paramString += ` --cref ${refUrl}`;
+                    if (refWeight === 'low') paramString += ` --cw 0`;
+                    if (refWeight === 'med') paramString += ` --cw 50`;
+                    if (refWeight === 'high') paramString += ` --cw 100`;
+                } else if (refMode === 'img') {
+                    if (refWeight === 'low') paramString += ` --iw 0.5`;
+                    if (refWeight === 'high') paramString += ` --iw 2`;
+                    if (refWeight === 'max') paramString += ` --iw 3`;
+                }
+            }
+
+            if (currentRatio) paramString += ` ${currentRatio}`;
+            const negative = document.getElementById('negativePrompt').value.trim();
+            if (negative) paramString += ` --no ${negative}`;
+            
+            let finalString = parts.join(', ') + paramString;
+            
+            // Prepend URL if it's an image prompt (Standard Midjourney format)
+            if (refUrl && refMode === 'img') {
+                finalString = `${refUrl} ${finalString}`;
+            }
+            
+            document.getElementById('finalPrompt').value = finalString;
+            document.getElementById('tokenCount').textContent = `${finalString.length} chars`;
+        }
+
+        function generatePrompt() {
+            if (currentMode === 'mockup') {
+                generateMockupPrompt();
+                return;
+            } else if (currentMode === 'product') {
+                generateProductPrompt();
+                return;
+            } else if (currentMode === 'graphic') {
+                generateGraphicPrompt();
+                return;
+            }
+
+            let subject = document.getElementById('subjectInput').value.trim();
+            const weight = document.getElementById('weightSlider').value;
+            const lightingVal = document.getElementById('lightingSelect').value;
+            const cinVal = document.getElementById('cinematographySelect').value;
+            const cameraAngleVal = document.getElementById('cameraAngleSelect').value;
+            const cameraLensVal = document.getElementById('cameraLensSelect').value;
+            const artistVal = document.getElementById('artistSelect').value;
+            const colorVal = document.getElementById('colorSelect').value;
+            const chaosVal = document.getElementById('chaosSlider').value;
+            const stylizeVal = document.getElementById('stylizeSlider').value;
+            const negative = document.getElementById('negativePrompt').value.trim();
+            const imgCamera = document.getElementById('imageCameraSelect').value;
+            const imgLensModel = document.getElementById('imageLensModelSelect').value;
+            const imgFocal = document.getElementById('imageFocalSelect').value;
+            const imgAperture = document.getElementById('imageApertureSelect').value;
+
+            // Apply Weight Syntax
+            if (subject && weight != 1) {
+                if (currentModel === 'mj') subject = `${subject}::${weight}`;
+                else if (currentModel === 'sd') subject = `(${subject}:${weight})`;
+                else subject = `${subject}, (weight: ${weight})`;
+            }
+
+            let parts = [];
+            
+            if (subject) parts.push(subject);
+            if (selectedStyles.length > 0) parts.push(selectedStyles.join(', '));
+            if (artistVal) parts.push(`in the style of ${artistVal}`);
+            if (colorVal) parts.push(`Color Palette: ${colorVal}`);
+            if (lightingVal) parts.push(lightingVal);
+            if (cameraAngleVal) parts.push(cameraAngleVal);
+            if (cinVal) parts.push(cinVal);
+            if (cameraLensVal) parts.push(cameraLensVal);
+            if (imgCamera) parts.push(`Shot on ${imgCamera}`);
+            if (imgLensModel) parts.push(`Lens: ${imgLensModel}`);
+            if (imgFocal) parts.push(`Focal Length: ${imgFocal}`);
+            if (imgAperture) parts.push(`Aperture: ${imgAperture}`);
+            if (selectedBoosters.length > 0) parts.push(selectedBoosters.join(', '));
+            
+            let finalString = parts.join(', ');
+            
+            // Add parameters
+            if (chaosVal > 0) finalString += ` --chaos ${chaosVal}`;
+            if (stylizeVal != 100) finalString += ` --s ${stylizeVal}`; // Assuming 100 is default
+            
+            if (currentRatio) finalString += ` ${currentRatio}`;
+            if (negative) finalString += ` --no ${negative}`;
+
+            const output = document.getElementById('finalPrompt');
+            output.value = finalString;
+            
+            document.getElementById('tokenCount').textContent = `${finalString.length} chars`;
+        }
+
+        function magicEnhance() {
+            // 1. Image Mode Logic
+            if (currentMode === 'image') {
+                const subject = document.getElementById('subjectInput').value.toLowerCase();
+                const currentStyles = selectedStyles.join(' ').toLowerCase();
+                
+                // Keyword Analysis
+                const isPortrait = /woman|man|girl|boy|person|face|portrait|character/.test(subject);
+                const isLandscape = /landscape|city|mountain|forest|nature|view|sky/.test(subject);
+                const isSciFi = /cyberpunk|robot|future|neon|space|sci-fi|tech/.test(subject) || currentStyles.includes('cyberpunk');
+                const isFantasy = /dragon|magic|wizard|fairy|monster|fantasy|castle/.test(subject);
+
+                // Smart Fills based on context
+                if (isPortrait) {
+                    if (!document.getElementById('cameraLensSelect').value) document.getElementById('cameraLensSelect').value = "85mm";
+                    if (!document.getElementById('lightingSelect').value) document.getElementById('lightingSelect').value = "Rembrandt Lighting";
+                    if (!document.getElementById('compositionSelect').value) document.getElementById('compositionSelect').value = "Rule of Thirds";
+                    if (!selectedBoosters.includes("Subsurface Scattering")) selectedBoosters.push("Subsurface Scattering");
+                } else if (isLandscape) {
+                    if (!document.getElementById('cameraLensSelect').value) document.getElementById('cameraLensSelect').value = "Wide Angle";
+                    if (!document.getElementById('lightingSelect').value) document.getElementById('lightingSelect').value = "Golden Hour";
+                    if (!document.getElementById('cameraAngleSelect').value) document.getElementById('cameraAngleSelect').value = "Drone View";
+                } else if (isSciFi) {
+                    if (!document.getElementById('lightingSelect').value) document.getElementById('lightingSelect').value = "Neon Lights";
+                    if (!document.getElementById('colorSelect').value) document.getElementById('colorSelect').value = "Cyberpunk Neon";
+                    if (!selectedBoosters.includes("Unreal Engine 5")) selectedBoosters.push("Unreal Engine 5");
+                } else if (isFantasy) {
+                    if (!document.getElementById('moodSelect').value) document.getElementById('moodSelect').value = "Ethereal";
+                    if (!document.getElementById('lightingSelect').value) document.getElementById('lightingSelect').value = "Bioluminescent";
+                }
+
+                // General Fallbacks (if still empty)
+                if (!document.getElementById('lightingSelect').value) document.getElementById('lightingSelect').value = "Cinematic Lighting";
+                if (!document.getElementById('cinematographySelect').value) document.getElementById('cinematographySelect').value = "Arri Alexa";
+                if (!document.getElementById('compositionSelect').value) document.getElementById('compositionSelect').value = "Golden Ratio";
+
+                // Essential Boosters
+                const essentials = ["Masterpiece", "Best Quality", "8k", "High Resolution", "Cinematic Composition"];
+                essentials.forEach(b => { if (!selectedBoosters.includes(b)) selectedBoosters.push(b); });
+
+                // Ensure at least one style
+                if (selectedStyles.length === 0) {
+                    selectedStyles.push("Cinematic");
+                    selectedStyles.push("Photorealistic");
+                }
+            } 
+            
+            // 2. Mockup Mode Logic
+            else if (currentMode === 'mockup') {
+                if (!document.getElementById('mockupEnvSelect').value) document.getElementById('mockupEnvSelect').value = "Minimalist Studio";
+                if (!document.getElementById('mockupLightingSelect').value) document.getElementById('mockupLightingSelect').value = "Softbox";
+                if (!document.getElementById('mockupViewSelect').value) document.getElementById('mockupViewSelect').value = "Front View";
+                if (!document.getElementById('mockupDepthSelect').value) document.getElementById('mockupDepthSelect').value = "Sharp Focus";
+                if (!document.getElementById('mockupStyleSelect').value) document.getElementById('mockupStyleSelect').value = "Photorealistic";
+                if (!document.getElementById('mockupCompositionSelect').value) document.getElementById('mockupCompositionSelect').value = "Centered";
+            } 
+            
+            // 3. Product Mode Logic
+            else if (currentMode === 'product') {
+                if (!document.getElementById('prodContextSelect').value) document.getElementById('prodContextSelect').value = "Studio Solid Color Background";
+                if (!document.getElementById('prodLightingSelect').value) document.getElementById('prodLightingSelect').value = "Softbox Studio Lighting";
+                if (!document.getElementById('prodAngleSelect').value) document.getElementById('prodAngleSelect').value = "Front Level View";
+                if (!document.getElementById('prodShotSelect').value) document.getElementById('prodShotSelect').value = "Full Body Shot";
+                if (!document.getElementById('prodVibeSelect').value) document.getElementById('prodVibeSelect').value = "Luxury/Elegant";
+                if (!document.getElementById('prodMaterialSelect').value) document.getElementById('prodMaterialSelect').value = "Matte Finish";
+            } 
+            
+            // 4. Graphic Mode Logic
+            else if (currentMode === 'graphic') {
+                const essentials = ["Vector Style", "High Resolution", "Professional Design", "Visual Hierarchy", "Trending"];
+                essentials.forEach(b => {
+                    if (!selectedGraphicBoosters.includes(b)) selectedGraphicBoosters.push(b);
+                });
+                
+                if (!document.getElementById('graphicFormatSelect').value) document.getElementById('graphicFormatSelect').value = "Poster Design";
+                if (!document.getElementById('graphicStyleSelect').value) document.getElementById('graphicStyleSelect').value = "Swiss Style";
+                if (!document.getElementById('graphicCompositionSelect').value) document.getElementById('graphicCompositionSelect').value = "Grid System Layout";
+                if (!document.getElementById('graphicTypographySelect').value) document.getElementById('graphicTypographySelect').value = "Bold Sans-Serif";
+                if (!document.getElementById('graphicColorSelect').value) document.getElementById('graphicColorSelect').value = "Vibrant";
+            }
+            
+            updateUIFromState();
+            generatePrompt();
+            showToast('✨ Magic Enhanced!');
+        }
+
+        function randomize() {            
+            clearAll(false); // Clear all without regenerating prompt yet
+
+            if (currentMode === 'image') {
+                // Random Subject
+                document.getElementById('subjectInput').value = randomSubjects[Math.floor(Math.random() * randomSubjects.length)];
+
+                // Random Style (1-2)
+                const randomStyleCount = Math.floor(Math.random() * 2) + 1;
+                for(let i=0; i<randomStyleCount; i++) {
+                    const style = styles[Math.floor(Math.random() * styles.length)];
+                    if(!selectedStyles.includes(style)) selectedStyles.push(style);
+                }
+                
+                // Random Lighting & Camera
+                document.getElementById('lightingSelect').value = Math.random() > 0.3 ? lighting[Math.floor(Math.random() * lighting.length)] : "";
+                document.getElementById('cinematographySelect').value = Math.random() > 0.3 ? cinematography[Math.floor(Math.random() * cinematography.length)] : "";
+                document.getElementById('cameraAngleSelect').value = Math.random() > 0.3 ? cameraAngles[Math.floor(Math.random() * cameraAngles.length)] : "";
+                document.getElementById('cameraLensSelect').value = Math.random() > 0.3 ? cameraLenses[Math.floor(Math.random() * cameraLenses.length)] : "";
+                document.getElementById('artistSelect').value = Math.random() > 0.5 ? artists[Math.floor(Math.random() * artists.length)] : "";
+                document.getElementById('colorSelect').value = Math.random() > 0.5 ? colors[Math.floor(Math.random() * colors.length)] : "";
+
+                // Random Boosters (2-4)
+                const randomBoosterCount = Math.floor(Math.random() * 3) + 2;
+                for(let i=0; i<randomBoosterCount; i++) {
+                    const booster = boosters[Math.floor(Math.random() * boosters.length)];
+                    if(!selectedBoosters.includes(booster)) selectedBoosters.push(booster);
+                }
+
+                // Random Parameters
+                const chaosSlider = document.getElementById('chaosSlider');
+                chaosSlider.value = Math.floor(Math.random() * 51); // 0-50
+                document.getElementById('chaosValue').textContent = chaosSlider.value;
+            } else if (currentMode === 'mockup') {
+                // Mockup Randomization
+                const cats = Object.keys(mockupCategories).filter(c => c !== "All");
+                const cat = cats[Math.floor(Math.random() * cats.length)];
+                document.getElementById('mockupCategorySelect').value = cat;
+                filterMockupItems();
+                
+                const items = mockupCategories[cat];
+                document.getElementById('mockupItemSelect').value = items[Math.floor(Math.random() * items.length)];
+                
+                const setRandom = (id, arr) => { document.getElementById(id).value = Math.random() > 0.2 ? arr[Math.floor(Math.random() * arr.length)] : ""; };
+                
+                setRandom('mockupEnvSelect', mockupEnvironments);
+                setRandom('mockupStyleSelect', mockupStyles);
+                setRandom('mockupViewSelect', mockupViews);
+                setRandom('mockupMaterialSelect', mockupMaterials);
+                setRandom('mockupFinishSelect', mockupFinishes);
+                setRandom('mockupLightingSelect', lighting);
+                setRandom('mockupCompositionSelect', mockupCompositions);
+                setRandom('mockupDepthSelect', mockupDepths);
+                setRandom('mockupEffectSelect', mockupEffects);
+                setRandom('mockupColorSelect', colors);
+            } else if (currentMode === 'graphic') {
+                const setRandom = (id, arr) => { document.getElementById(id).value = Math.random() > 0.2 ? arr[Math.floor(Math.random() * arr.length)] : ""; };
+                setRandom('graphicFormatSelect', graphicData.formats);
+                setRandom('graphicStyleSelect', graphicData.styles);
+                setRandom('graphicCompositionSelect', graphicData.compositions);
+                setRandom('graphicTypographySelect', graphicData.typography);
+                setRandom('graphicColorSelect', colors);
+                setRandom('graphicElementSelect', graphicData.elements);
+                setRandom('graphicThemeSelect', graphicData.themes);
+                setRandom('graphicIndustrySelect', graphicData.industries);
+                setRandom('graphicOccasionSelect', graphicData.occasions);
+                setRandom('graphicMoodSelect', moods);
+                
+                // Random Graphic Boosters
+                selectedGraphicBoosters = [];
+                const boosters = graphicData.boosters;
+                for(let i=0; i<3; i++) {
+                    const b = boosters[Math.floor(Math.random() * boosters.length)];
+                    if(!selectedGraphicBoosters.includes(b)) selectedGraphicBoosters.push(b);
+                }
+            } else {
+                // Product Randomization
+                const setRandom = (id, arr) => { document.getElementById(id).value = Math.random() > 0.2 ? arr[Math.floor(Math.random() * arr.length)] : ""; };
+                setRandom('prodContextSelect', productContexts);
+                setRandom('prodLightingSelect', productLighting);
+                setRandom('prodOutdoorLightingSelect', productOutdoorLighting);
+                setRandom('prodAngleSelect', productAngles);
+                setRandom('prodShotSelect', productShots);
+                setRandom('prodPropsSelect', productProps);
+                setRandom('prodVibeSelect', productVibes);
+                setRandom('prodMaterialSelect', productMaterials);
+                setRandom('prodColorSelect', productColors);
+                setRandom('prodCameraSelect', productCameras);
+                setRandom('prodLensSelect', productLenses);
+                setRandom('prodFocalSelect', productFocals);
+                setRandom('prodApertureSelect', productApertures);
+            }
+
+            // Update UI to reflect random choices
+            updateUIFromState();
+            generatePrompt();
+        }
+
+        function updateUIFromState() {
+            // Update Style Buttons
+            const styleBtns = document.getElementById('styleGrid').children;
+            for(let btn of styleBtns) {
+                if (selectedStyles.includes(btn.textContent)) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+
+            // Update Booster Buttons
+            
+            const boosterBtns = document.getElementById('boosterContainer').children;
+            for(let btn of boosterBtns) {
+                if (selectedBoosters.includes(btn.textContent)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            }
+            
+            const graphicBoosterBtns = document.getElementById('graphicBoosterContainer').children;
+            for(let btn of graphicBoosterBtns) {
+                if (selectedGraphicBoosters.includes(btn.textContent)) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+        }
+
+        function clearAll(doGeneratePrompt = true) {
+            document.getElementById('subjectInput').value = '';
+            document.getElementById('negativePrompt').value = '';
+            
+            selectedStyles = [];
+            selectedBoosters = [];
+            selectedGraphicBoosters = [];
+            document.querySelectorAll('.tag-btn.active').forEach(b => b.classList.remove('active'));
+
+            document.getElementById('lightingSelect').value = '';
+            document.getElementById('cameraAngleSelect').value = '';
+            document.getElementById('cinematographySelect').value = '';
+            document.getElementById('cameraLensSelect').value = '';
+            ['mockupContent', 'mockupCategorySelect', 'mockupItemSelect',
+             'mockupEnvSelect', 'mockupStyleSelect', 'mockupViewSelect', 'mockupMaterialSelect', 
+             'mockupFinishSelect', 'mockupLightingSelect', 'mockupCompositionSelect', 
+             'mockupDepthSelect', 'mockupEffectSelect', 'mockupColorSelect'].forEach(id => {
+                 const el = document.getElementById(id);
+                 if(el) el.value = '';
+             });
+            
+            ['imageCameraSelect', 'imageLensModelSelect', 'imageFocalSelect', 'imageApertureSelect'].forEach(id => {
+                 const el = document.getElementById(id);
+                 if(el) el.value = '';
+             });
+            
+            ['productInput', 'prodContextSelect', 'prodLightingSelect', 'prodAngleSelect', 'prodShotSelect', 
+             'prodPropsSelect', 'prodVibeSelect', 'prodMaterialSelect', 'prodColorSelect', 'prodOutdoorLightingSelect',
+             'prodCameraSelect', 'prodLensSelect', 'prodFocalSelect', 'prodApertureSelect'].forEach(id => {
+                 const el = document.getElementById(id);
+                 if(el) el.value = '';
+             });
+             
+            ['graphicConceptInput', 'graphicFormatSelect', 'graphicStyleSelect', 'graphicCompositionSelect', 
+             'graphicTypographySelect', 'graphicColorSelect', 'graphicElementSelect', 'graphicThemeSelect', 
+             'graphicIndustrySelect', 'graphicOccasionSelect', 'graphicMoodSelect', 'graphicLocationInput', 'graphicAudienceInput', 'graphicBrandInput',
+             'graphicBrandNameInput', 'graphicHeadlineInput', 'graphicSubheadlineInput', 'graphicCtaInput', 'graphicTaglineInput',
+             'graphicDateInput', 'graphicTimeInput', 'graphicVenueInput', 'graphicPriceInput', 'graphicContactInput', 'graphicSocialInput', 'graphicDisclaimerInput',
+             'graphicRefUrl'].forEach(id => {
+                 const el = document.getElementById(id);
+                 if(el) el.value = '';
+             });
+
+            document.getElementById('artistSelect').value = '';
+            document.getElementById('colorSelect').value = '';
+
+            const chaosSlider = document.getElementById('chaosSlider');
+            chaosSlider.value = 0;
+            document.getElementById('chaosValue').textContent = '0';
+
+            const stylizeSlider = document.getElementById('stylizeSlider');
+            stylizeSlider.value = 100;
+            document.getElementById('stylizeValue').textContent = '100';
+
+            // Reset ratio button to default
+            document.querySelectorAll('.ratio-btn').forEach(b => {
+                b.classList.remove('active');
+            });
+            const defaultRatioBtn = document.querySelector('.ratio-btn[data-ratio=""]');
+            if(defaultRatioBtn) defaultRatioBtn.classList.add('active');
+            
+            document.getElementById('weightSlider').value = 1;
+            document.getElementById('weightValue').textContent = '1.0';
+            
+            document.getElementById('prodWeightSlider').value = 2;
+            document.getElementById('prodWeightValue').textContent = '2.0';
+
+            currentRatio = "";
+
+            if (doGeneratePrompt) generatePrompt();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.remove('translate-x-[120%]');
+            setTimeout(() => {
+                toast.classList.add('translate-x-[120%]');
+            }, 2000);
+        }
+
+        function copyToClipboard() {
+            const copyText = document.getElementById("finalPrompt");
+            if (!copyText.value) return;
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+            
+            // Determine correct subject based on mode
+            let subject = "Untitled";
+            if (currentMode === 'image') subject = document.getElementById('subjectInput').value;
+            else if (currentMode === 'mockup') subject = document.getElementById('mockupContent').value;
+            else if (currentMode === 'product') subject = document.getElementById('productInput').value;
+            else if (currentMode === 'graphic') subject = document.getElementById('graphicConceptInput').value;
+            
+            saveToHistory(copyText.value, subject || "Untitled Prompt");
+            
+            // Button Feedback
+            const btn = document.getElementById('copyBtn');
+            const originalText = btn.innerText;
+            btn.innerText = "Copied!";
+            btn.classList.add('bg-[#e81e29]', 'text-white', 'border-[#e81e29]');
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.remove('bg-[#e81e29]', 'text-white', 'border-[#e81e29]');
+            }, 1500);
+            
+            showToast('Copied to clipboard!');
+        }
+
+        function saveFavorite() {
+            const fullPrompt = document.getElementById('finalPrompt').value.trim();
+            const subject = document.getElementById('subjectInput').value.trim();
+            const mockupSub = document.getElementById('mockupContent').value.trim();
+            const productSub = document.getElementById('productInput').value.trim();
+            const graphicSub = document.getElementById('graphicConceptInput').value.trim();
+            if (!fullPrompt) return;
+
+            const state = {
+                styles: selectedStyles,
+                boosters: selectedBoosters,
+                lighting: document.getElementById('lightingSelect').value,
+                cinematography: document.getElementById('cinematographySelect').value,
+                angle: document.getElementById('cameraAngleSelect').value,
+                lens: document.getElementById('cameraLensSelect').value,
+                artist: document.getElementById('artistSelect').value,
+                color: document.getElementById('colorSelect').value,
+                chaos: document.getElementById('chaosSlider').value,
+                stylize: document.getElementById('stylizeSlider').value,
+                ratio: currentRatio,
+                negative: document.getElementById('negativePrompt').value,
+                weight: document.getElementById('weightSlider').value,
+                // Mockup State
+                mode: currentMode,
+                mockContent: mockupSub,
+                mockCat: document.getElementById('mockupCategorySelect').value,
+                mockItem: document.getElementById('mockupItemSelect').value,
+                mockEnv: document.getElementById('mockupEnvSelect').value,
+                mockStyle: document.getElementById('mockupStyleSelect').value,
+                mockView: document.getElementById('mockupViewSelect').value,
+                mockMat: document.getElementById('mockupMaterialSelect').value,
+                mockFin: document.getElementById('mockupFinishSelect').value,
+                mockLight: document.getElementById('mockupLightingSelect').value,
+                mockComp: document.getElementById('mockupCompositionSelect').value,
+                mockDepth: document.getElementById('mockupDepthSelect').value,
+                mockEffect: document.getElementById('mockupEffectSelect').value,
+                mockColor: document.getElementById('mockupColorSelect').value,
+                imgCamera: document.getElementById('imageCameraSelect').value,
+                imgLensModel: document.getElementById('imageLensModelSelect').value,
+                imgFocal: document.getElementById('imageFocalSelect').value,
+                imgAperture: document.getElementById('imageApertureSelect').value,
+                // Product State
+                prodContent: productSub,
+                prodContext: document.getElementById('prodContextSelect').value,
+                prodLight: document.getElementById('prodLightingSelect').value,
+                prodOutdoorLight: document.getElementById('prodOutdoorLightingSelect').value,
+                prodAngle: document.getElementById('prodAngleSelect').value,
+                prodShot: document.getElementById('prodShotSelect').value,
+                prodProps: document.getElementById('prodPropsSelect').value,
+                prodVibe: document.getElementById('prodVibeSelect').value,
+                prodMat: document.getElementById('prodMaterialSelect').value,
+                prodCol: document.getElementById('prodColorSelect').value,
+                prodCamera: document.getElementById('prodCameraSelect').value,
+                prodLens: document.getElementById('prodLensSelect').value,
+                prodFocal: document.getElementById('prodFocalSelect').value,
+                prodAperture: document.getElementById('prodApertureSelect').value,
+                prodIW: document.getElementById('prodWeightSlider').value,
+                // Graphic State
+                graphicContent: graphicSub,
+                graphicFormat: document.getElementById('graphicFormatSelect').value,
+                graphicStyle: document.getElementById('graphicStyleSelect').value,
+                graphicComp: document.getElementById('graphicCompositionSelect').value,
+                graphicTypo: document.getElementById('graphicTypographySelect').value,
+                graphicColor: document.getElementById('graphicColorSelect').value,
+                graphicElem: document.getElementById('graphicElementSelect').value,
+                graphicTheme: document.getElementById('graphicThemeSelect').value,
+                graphicInd: document.getElementById('graphicIndustrySelect').value,
+                graphicOcc: document.getElementById('graphicOccasionSelect').value,
+                graphicMood: document.getElementById('graphicMoodSelect').value,
+                graphicAudience: document.getElementById('graphicAudienceInput').value.trim(),
+                graphicBrand: document.getElementById('graphicBrandInput').value.trim(),
+                graphicLocation: document.getElementById('graphicLocationInput').value.trim(),
+                graphicBrandName: document.getElementById('graphicBrandNameInput').value.trim(),
+                graphicHeadline: document.getElementById('graphicHeadlineInput').value.trim(),
+                graphicSubheadline: document.getElementById('graphicSubheadlineInput').value.trim(),
+                graphicTagline: document.getElementById('graphicTaglineInput').value.trim(),
+                graphicCta: document.getElementById('graphicCtaInput').value.trim(),
+                graphicBoosters: selectedGraphicBoosters,
+                graphicDate: document.getElementById('graphicDateInput').value.trim(),
+                graphicTime: document.getElementById('graphicTimeInput').value.trim(),
+                graphicVenue: document.getElementById('graphicVenueInput').value.trim(),
+                graphicPrice: document.getElementById('graphicPriceInput').value.trim(),
+                graphicContact: document.getElementById('graphicContactInput').value.trim(),
+                graphicSocial: document.getElementById('graphicSocialInput').value.trim(),
+                graphicDisclaimer: document.getElementById('graphicDisclaimerInput').value.trim()
+            };
+            
+            let sub = currentMode === 'image' ? subject : (currentMode === 'mockup' ? `Mockup: ${mockupSub}` : (currentMode === 'product' ? `Product: ${productSub}` : `Graphic: ${graphicSub}`));
+            
+            const favorite = { id: Date.now(), subject: sub || "Untitled Prompt", fullPrompt, state };
+            favorites.unshift(favorite); // Add to beginning
+            localStorage.setItem('aiPromptFavorites', JSON.stringify(favorites));
+            renderFavorites();
+            showToast('Prompt saved to favorites!');
+        }
+
+        function loadFavorites() {
+            const storedFavorites = localStorage.getItem('aiPromptFavorites');
+            if (storedFavorites) {
+                favorites = JSON.parse(storedFavorites);
+                renderFavorites();
+            }
+        }
+
+        function renderFavorites() {
+            const container = document.getElementById('favoritesContainer');
+            container.innerHTML = '';
+            if (favorites.length === 0) {
+                container.innerHTML = '<p class="text-slate-500 text-sm">No favorites saved yet.</p>';
+                return;
+            }
+            favorites.forEach((fav, index) => {
+                const div = document.createElement('div');
+                div.className = 'bg-white/5 p-3 rounded-lg flex items-center justify-between gap-2 border border-white/5 hover:border-white/10 transition-colors';
+                div.innerHTML = `
+                    <p class="text-sm text-slate-300 truncate flex-1 cursor-pointer" title="${fav.fullPrompt}">${fav.subject}</p>
+                    <button onclick="useFavorite(${index})" class="text-xs bg-white text-black font-bold py-1 px-2 rounded">Load</button>
+                    <button onclick="deleteFavorite(${index})" class="text-xs bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 font-bold py-1 px-2 rounded">Del</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function useFavorite(index) {
+            const fav = favorites[index];
+            
+            if (!fav.state) {
+                // Legacy fallback
+                document.getElementById('subjectInput').value = fav.subject;
+                document.getElementById('finalPrompt').value = fav.fullPrompt;
+            } else {
+                // Restore State
+                if (fav.state.mode && fav.state.mode !== currentMode) {
+                    switchMode(fav.state.mode);
+                }
+
+                if (currentMode === 'image') {
+                document.getElementById('subjectInput').value = fav.subject;
+                selectedStyles = fav.state.styles || [];
+                selectedBoosters = fav.state.boosters || [];
+                document.getElementById('weightSlider').value = fav.state.weight || 1;
+                document.getElementById('weightValue').textContent = fav.state.weight || 1;
+                
+                document.getElementById('lightingSelect').value = fav.state.lighting || "";
+                document.getElementById('cinematographySelect').value = fav.state.cinematography || "";
+                document.getElementById('cameraAngleSelect').value = fav.state.angle || "";
+                document.getElementById('cameraLensSelect').value = fav.state.lens || "";
+                document.getElementById('artistSelect').value = fav.state.artist || "";
+                document.getElementById('colorSelect').value = fav.state.color || "";
+                document.getElementById('imageCameraSelect').value = fav.state.imgCamera || "";
+                document.getElementById('imageLensModelSelect').value = fav.state.imgLensModel || "";
+                document.getElementById('imageFocalSelect').value = fav.state.imgFocal || "";
+                document.getElementById('imageApertureSelect').value = fav.state.imgAperture || "";
+                updateUIFromState();
+                } else if (currentMode === 'mockup') {
+                    document.getElementById('mockupContent').value = fav.state.mockContent || "";
+                    document.getElementById('mockupCategorySelect').value = fav.state.mockCat || "All";
+                    filterMockupItems(); // Update items based on category
+                    document.getElementById('mockupItemSelect').value = fav.state.mockItem || "";
+                    document.getElementById('mockupEnvSelect').value = fav.state.mockEnv || "";
+                    document.getElementById('mockupStyleSelect').value = fav.state.mockStyle || "";
+                    document.getElementById('mockupViewSelect').value = fav.state.mockView || "";
+                    document.getElementById('mockupMaterialSelect').value = fav.state.mockMat || "";
+                    document.getElementById('mockupFinishSelect').value = fav.state.mockFin || "";
+                    document.getElementById('mockupLightingSelect').value = fav.state.mockLight || "";
+                    document.getElementById('mockupCompositionSelect').value = fav.state.mockComp || "";
+                    document.getElementById('mockupDepthSelect').value = fav.state.mockDepth || "";
+                    document.getElementById('mockupEffectSelect').value = fav.state.mockEffect || "";
+                    document.getElementById('mockupColorSelect').value = fav.state.mockColor || "";
+                } else if (currentMode === 'product') {
+                    document.getElementById('productInput').value = fav.state.prodContent || "";
+                    document.getElementById('prodContextSelect').value = fav.state.prodContext || "";
+                    document.getElementById('prodLightingSelect').value = fav.state.prodLight || "";
+                    document.getElementById('prodOutdoorLightingSelect').value = fav.state.prodOutdoorLight || "";
+                    document.getElementById('prodAngleSelect').value = fav.state.prodAngle || "";
+                    document.getElementById('prodShotSelect').value = fav.state.prodShot || "";
+                    document.getElementById('prodPropsSelect').value = fav.state.prodProps || "";
+                    document.getElementById('prodVibeSelect').value = fav.state.prodVibe || "";
+                    document.getElementById('prodMaterialSelect').value = fav.state.prodMat || "";
+                    document.getElementById('prodColorSelect').value = fav.state.prodCol || "";
+                    document.getElementById('prodCameraSelect').value = fav.state.prodCamera || "";
+                    document.getElementById('prodLensSelect').value = fav.state.prodLens || "";
+                    document.getElementById('prodFocalSelect').value = fav.state.prodFocal || "";
+                    document.getElementById('prodApertureSelect').value = fav.state.prodAperture || "";
+                    
+                    document.getElementById('prodWeightSlider').value = fav.state.prodIW || 2;
+                    document.getElementById('prodWeightValue').textContent = fav.state.prodIW || 2;
+                } else if (currentMode === 'graphic') {
+                    document.getElementById('graphicConceptInput').value = fav.state.graphicContent || "";
+                    document.getElementById('graphicFormatSelect').value = fav.state.graphicFormat || "";
+                    document.getElementById('graphicStyleSelect').value = fav.state.graphicStyle || "";
+                    document.getElementById('graphicCompositionSelect').value = fav.state.graphicComp || "";
+                    document.getElementById('graphicTypographySelect').value = fav.state.graphicTypo || "";
+                    document.getElementById('graphicColorSelect').value = fav.state.graphicColor || "";
+                    document.getElementById('graphicElementSelect').value = fav.state.graphicElem || "";
+                    document.getElementById('graphicThemeSelect').value = fav.state.graphicTheme || "";
+                    document.getElementById('graphicIndustrySelect').value = fav.state.graphicInd || "";
+                    document.getElementById('graphicOccasionSelect').value = fav.state.graphicOcc || "";
+                    document.getElementById('graphicMoodSelect').value = fav.state.graphicMood || "";
+                    document.getElementById('graphicAudienceInput').value = fav.state.graphicAudience || "";
+                    document.getElementById('graphicBrandInput').value = fav.state.graphicBrand || "";
+                    document.getElementById('graphicLocationInput').value = fav.state.graphicLocation || "";
+                    document.getElementById('graphicBrandNameInput').value = fav.state.graphicBrandName || "";
+                    document.getElementById('graphicHeadlineInput').value = fav.state.graphicHeadline || "";
+                    document.getElementById('graphicSubheadlineInput').value = fav.state.graphicSubheadline || "";
+                    document.getElementById('graphicTaglineInput').value = fav.state.graphicTagline || "";
+                    document.getElementById('graphicCtaInput').value = fav.state.graphicCta || "";
+                    document.getElementById('graphicDateInput').value = fav.state.graphicDate || "";
+                    document.getElementById('graphicTimeInput').value = fav.state.graphicTime || "";
+                    document.getElementById('graphicVenueInput').value = fav.state.graphicVenue || "";
+                    document.getElementById('graphicPriceInput').value = fav.state.graphicPrice || "";
+                    document.getElementById('graphicContactInput').value = fav.state.graphicContact || "";
+                    document.getElementById('graphicSocialInput').value = fav.state.graphicSocial || "";
+                    document.getElementById('graphicDisclaimerInput').value = fav.state.graphicDisclaimer || "";
+                    selectedGraphicBoosters = fav.state.graphicBoosters || [];
+                    updateUIFromState();
+                }
+                
+                document.getElementById('chaosSlider').value = fav.state.chaos || 0;
+                document.getElementById('chaosValue').textContent = fav.state.chaos || 0;
+                
+                document.getElementById('stylizeSlider').value = fav.state.stylize || 100;
+                document.getElementById('stylizeValue').textContent = fav.state.stylize || 100;
+                
+                document.getElementById('negativePrompt').value = fav.state.negative || "";
+                
+                currentRatio = fav.state.ratio || "";
+                
+                // Update Ratio Buttons
+                document.querySelectorAll('.ratio-btn').forEach(b => {
+                    if (b.dataset.ratio === currentRatio) b.classList.add('active');
+                    else b.classList.remove('active');
+                });
+                
+                generatePrompt();
+            }
+            showToast('Favorite loaded!');
+        }
+
+        function deleteFavorite(index) {
+            favorites.splice(index, 1);
+            localStorage.setItem('aiPromptFavorites', JSON.stringify(favorites));
+            renderFavorites();
+        }
+
+        function switchTab(tab) {
+            const favBtn = document.getElementById('tab-favorites');
+            const histBtn = document.getElementById('tab-history');
+            const favCont = document.getElementById('favoritesContainer');
+            const histCont = document.getElementById('historyContainer');
+
+            if (tab === 'favorites') {
+                favBtn.classList.add('text-white', 'border-b-2', 'border-white');
+                favBtn.classList.remove('text-white/40');
+                histBtn.classList.remove('text-white', 'border-b-2', 'border-white');
+                histBtn.classList.add('text-white/40');
+                
+                favCont.classList.remove('hidden');
+                histCont.classList.add('hidden');
+            } else {
+                histBtn.classList.add('text-white', 'border-b-2', 'border-white');
+                histBtn.classList.remove('text-white/40');
+                favBtn.classList.remove('text-white', 'border-b-2', 'border-white');
+                favBtn.classList.add('text-white/40');
+                
+                histCont.classList.remove('hidden');
+                favCont.classList.add('hidden');
+                renderHistory();
+            }
+        }
+
+        function saveToHistory(prompt, subject) {
+            const item = { id: Date.now(), fullPrompt: prompt, subject: subject, timestamp: new Date().toLocaleTimeString() };
+            history.unshift(item);
+            if (history.length > 20) history.pop();
+            if (document.getElementById('historyContainer').classList.contains('hidden') === false) renderHistory();
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyContainer');
+            container.innerHTML = '';
+            if (history.length === 0) { container.innerHTML = '<p class="text-slate-500 text-sm">No history yet.</p>'; return; }
+            history.forEach((item) => {
+                const div = document.createElement('div');
+                div.className = 'bg-white/5 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors';
+                div.innerHTML = `<div class="flex justify-between items-start mb-1"><span class="text-xs text-white/40 font-mono">${item.timestamp}</span><button onclick="document.getElementById('finalPrompt').value = '${item.fullPrompt.replace(/'/g, "\\'")}'" class="text-xs text-white/60 hover:text-white">Load</button></div><p class="text-xs text-slate-300 line-clamp-2 cursor-pointer" title="${item.fullPrompt}">${item.fullPrompt}</p>`;
+                container.appendChild(div);
+            });
+        }
+
+        function enterApp() {
+            const landing = document.getElementById('landing-page');
+            const app = document.getElementById('app-container');
+            
+            landing.style.opacity = '0';
+            landing.style.transform = 'scale(1.1)';
+            landing.style.pointerEvents = 'none';
+            
+            setTimeout(() => {
+                landing.classList.add('hidden');
+                app.classList.remove('hidden');
+                // Trigger reflow
+                void app.offsetWidth;
+                app.classList.remove('opacity-0', 'translate-y-10');
+            }, 500);
+        }
+
+        init();
+    </script>
+</body>
+
+
+</html>
