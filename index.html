@@ -9,56 +9,49 @@
     <style>
         body { 
             font-family: 'Space Grotesk', sans-serif; 
-            background-color: #030303;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                radial-gradient(circle at 0% 0%, rgba(232, 30, 41, 0.1), transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(59, 130, 246, 0.1), transparent 40%);
-            background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
-            background-attachment: fixed;
+            background-color: #050505;
             color: #e2e8f0; 
             overflow-x: hidden; 
             min-height: 100vh; 
         }
         
-        /* Minimal Neon Theme */
+        /* Minimal Monochromatic Flat Theme */
         .glass-panel {
-            background: #080808;
-            border: 1px solid #27272a;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border-radius: 12px;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+            background: #111;
+            border: 1px solid #222;
+            box-shadow: none;
+            border-radius: 8px;
+            transition: border-color 0.2s ease;
         }
         .glass-panel:hover {
-            border-color: #e81e29;
-            box-shadow: 0 0 30px rgba(232, 30, 41, 0.15);
-            transform: translateY(-2px);
+            border-color: #444;
+            box-shadow: none;
+            transform: none;
         }
 
         .input-field {
-            background: #000;
-            border: 1px solid #27272a;
+            background: #050505;
+            border: 1px solid #222;
             color: #fff;
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            font-size: 0.95rem;
+            transition: border-color 0.2s ease;
+            border-radius: 6px;
+            font-size: 1rem;
             padding: 1rem;
             font-family: 'Space Grotesk', sans-serif;
         }
         .input-field:focus {
-            background: #000;
+            background: #050505;
             border-color: #e81e29;
-            box-shadow: 0 0 0 1px #e81e29, 0 0 20px rgba(232, 30, 41, 0.2);
+            box-shadow: 0 0 10px rgba(232, 30, 41, 0.2);
             outline: none;
-            transform: scale(1.01);
+            transform: none;
         }
 
         .tag-btn {
             background: transparent;
-            border: 1px solid #27272a;
-            color: #71717a;
-            border-radius: 6px;
+            border: 1px solid #222;
+            color: #666;
+            border-radius: 4px;
             font-size: 0.75rem;
             font-weight: 600;
             letter-spacing: 0.05em;
@@ -66,28 +59,28 @@
             transition: all 0.2s;
         }
         .tag-btn:hover {
-            border-color: #e81e29;
+            border-color: #fff;
             color: #fff;
-            background: rgba(232, 30, 41, 0.05);
-            box-shadow: 0 0 15px rgba(232, 30, 41, 0.2);
+            background: transparent;
+            box-shadow: none;
         }
         .tag-btn.active {
             background: #e81e29;
             color: #fff;
             border-color: #e81e29;
-            box-shadow: 0 0 20px rgba(232, 30, 41, 0.4);
+            box-shadow: 0 0 10px rgba(232, 30, 41, 0.3);
         }
 
         /* Custom range slider */
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 2px; background: #27272a; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #000; border: 2px solid #e81e29; box-shadow: 0 0 10px rgba(232, 30, 41, 0.8); margin-top: -7px; cursor: pointer; transition: transform 0.1s; }
-        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); background: #e81e29; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 2px; background: #222; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: #e81e29; border: 2px solid #050505; box-shadow: 0 0 10px rgba(232, 30, 41, 0.5); margin-top: -6px; cursor: pointer; transition: all 0.2s; }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.1); background: #ff3c4a; }
         
         /* Toast */
-        #toast { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); background: #000; border: 1px solid #e81e29; color: white; box-shadow: 0 0 30px rgba(232, 30, 41, 0.3); border-radius: 8px; }
+        #toast { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); background: #111; border: 1px solid #e81e29; color: white; box-shadow: 0 0 20px rgba(232, 30, 41, 0.3); border-radius: 6px; }
 
         /* Micro-interactions */
-        button:active, .tag-btn:active { transform: scale(0.98); }
+        button:active, .tag-btn:active { transform: translateY(1px); }
         
         /* Staggered Animation */
         @keyframes staggerFadeUp {
@@ -110,10 +103,14 @@
             background: linear-gradient(110deg, #e81e29 20%, #ff4d58 40%, #e81e29 60%);
             background-size: 200% 100%;
             animation: shimmer 3s infinite linear;
+            color: #fff;
             border: none;
             box-shadow: 0 0 20px rgba(232, 30, 41, 0.4);
-            border-radius: 8px;
+            border-radius: 6px;
             transition: all 0.3s ease;
+        }
+        .btn-shimmer:hover {
+            box-shadow: 0 0 30px rgba(232, 30, 41, 0.6);
         }
 
         /* Fade Animation */
@@ -123,59 +120,58 @@
 
         /* Mode Switcher Buttons */
         .mode-btn {
-            padding: 0.5rem 1.5rem;
-            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
             font-size: 0.875rem;
-            font-weight: 600;
-            color: #71717a;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #888;
+            transition: color 0.3s ease;
             background: transparent;
-            border: 1px solid transparent;
+            border: none;
+            position: relative;
+            z-index: 10;
+            white-space: nowrap;
         }
-        .mode-btn:hover { color: #fff; border-color: #27272a; }
+        .mode-btn:hover { color: #fff; }
         .mode-btn.active {
-            background: rgba(232, 30, 41, 0.1);
-            color: #e81e29;
-            border: 1px solid #e81e29;
-            box-shadow: 0 0 15px rgba(232, 30, 41, 0.2);
+            color: #fff;
         }
 
         /* Ratio Buttons */
         .ratio-btn {
             background: transparent;
-            border: 1px solid #27272a;
-            color: #71717a;
-            border-radius: 6px;
+            border: 1px solid #222;
+            color: #666;
+            border-radius: 4px;
             font-size: 0.75rem;
             transition: all 0.3s;
             padding: 0.5rem;
             font-family: 'Space Grotesk', sans-serif;
         }
         .ratio-btn:hover {
-            border-color: #e81e29;
+            border-color: #fff;
             color: #fff;
-            box-shadow: 0 0 10px rgba(232, 30, 41, 0.2);
+            box-shadow: none;
         }
         .ratio-btn.active {
             background: #e81e29;
             color: #fff;
             border-color: #e81e29;
-            box-shadow: 0 0 20px rgba(232, 30, 41, 0.5);
+            box-shadow: 0 0 10px rgba(232, 30, 41, 0.3);
         }
 
         /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #e81e29; }
 
         /* Landing Page Animations */
-        .blob { position: absolute; filter: blur(120px); opacity: 0.15; animation: float 10s infinite ease-in-out alternate; border-radius: 50%; z-index: 0; }
-        @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, -30px); } }
+        .blob { display: none; }
         
         .landing-title { 
             color: #fff;
-            text-shadow: 0 0 40px rgba(232, 30, 41, 0.5);
+            text-shadow: none;
         }
 
         .animate-up { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(30px); }
@@ -184,6 +180,10 @@
         .delay-300 { animation-delay: 0.3s; }
         
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* Hide scrollbar for horizontal scrolling areas */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
@@ -200,9 +200,9 @@
                 <div class="inline-block px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs font-medium text-slate-400 mb-4 animate-up">
                     v2.0 Beta Now Available
                 </div>
-                <h1 class="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter animate-up delay-100 landing-title">
+                <h1 class="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter animate-up delay-100 landing-title">
                     The Prompt <br />
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#e81e29] to-orange-500">Architect</span>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#e81e29] to-red-500">Architect</span>
                 </h1>
                 <p class="text-slate-400 text-lg md:text-xl font-light tracking-wide animate-up delay-200 max-w-2xl mx-auto leading-relaxed">
                     Craft professional-grade AI prompts for Nano Banana, Midjourney, Stable Diffusion & DALL-E 3 with a designer-first interface made by a fellow Brand Designer & Prompt Engineer syuj.ai_
@@ -210,7 +210,7 @@
             </div>
 
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-up delay-300 pt-8">
-                <button onclick="enterApp()" class="group relative px-10 py-4 bg-white text-black font-bold rounded-full overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.4)]">
+                <button onclick="enterApp()" class="group relative px-10 py-4 bg-white text-black font-bold rounded-full overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(232,30,41,0.4)]">
                     <span class="relative z-10 flex items-center gap-3 text-lg tracking-tight">
                         Enter Studio <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </span>
@@ -232,12 +232,13 @@
             <p class="text-slate-500 font-light">Crafting precise prompts for Image Generation, Mockups, Product Shoots & Graphic Designs</p>
             
             <!-- Mode Switcher -->
-            <div class="mt-6 flex justify-center">
-                <div class="glass-panel p-1 rounded-full inline-flex">
-                    <button onclick="switchMode('image')" id="mode-image" class="mode-btn active">Image Prompts</button>
-                    <button onclick="switchMode('mockup')" id="mode-mockup" class="mode-btn">Mockup Generator</button>
-                    <button onclick="switchMode('product')" id="mode-product" class="mode-btn">Product Shoot</button>
-                    <button onclick="switchMode('graphic')" id="mode-graphic" class="mode-btn">Graphic Design</button>
+            <div class="mt-6 w-full overflow-x-auto pb-2 -mb-2 flex justify-start md:justify-center no-scrollbar px-1">
+                <div id="mode-switcher-container" class="relative bg-[#111] border border-[#222] p-1 rounded-lg inline-flex items-center shadow-inner flex-nowrap whitespace-nowrap flex-shrink-0">
+                    <div id="mode-glider" class="absolute h-[calc(100%-8px)] top-1 left-1 bg-[#e81e29] rounded-md transition-all duration-300 ease-in-out shadow-[0_0_15px_rgba(232,30,41,0.4)]"></div>
+                    <button onclick="switchMode('image', this)" id="mode-image" class="mode-btn active">Image Prompts</button>
+                    <button onclick="switchMode('mockup', this)" id="mode-mockup" class="mode-btn">Mockup Generator</button>
+                    <button onclick="switchMode('product', this)" id="mode-product" class="mode-btn">Product Shoot</button>
+                    <button onclick="switchMode('graphic', this)" id="mode-graphic" class="mode-btn">Graphic Design</button>
                 </div>
             </div>
         </div>
@@ -246,7 +247,7 @@
         <div id="imageControls" class="lg:col-span-2 space-y-6 stagger-appear">
             
             <!-- Main Subject -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <label class="block text-white/60 text-xs font-bold mb-2 uppercase tracking-widest">Core Subject</label>
                 <textarea id="subjectInput" rows="3" class="input-field w-full rounded-xl p-4 text-lg text-white placeholder-slate-500" placeholder="e.g., A futuristic city floating in the clouds..."></textarea>
                 
@@ -258,7 +259,7 @@
             </div>
 
             <!-- Style & Medium -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <div class="flex justify-between items-baseline mb-4">
                     <label class="text-white/60 text-xs font-bold uppercase tracking-widest">Art Style & Medium</label>
                 </div>
@@ -268,7 +269,7 @@
             </div>
 
             <!-- Camera Gear -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Gear</label>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                     <div>
@@ -294,14 +295,14 @@
             
             <!-- Lighting & Camera -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 ">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Lighting</label>
                     <select id="lightingSelect" class="input-field w-full rounded-lg p-3 text-white">
                         <option value="">None</option>
                         <!-- JS populate -->
                     </select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl ">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl ">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Cinematography</label>
                     <select id="cinematographySelect" class="input-field w-full rounded-lg p-3 text-white">
                         <option value="">None</option>
@@ -309,28 +310,28 @@
                     </select>
                 </div>
 
-                <div class="glass-panel p-6 rounded-2xl ">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl ">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Angle</label>
                     <select id="cameraAngleSelect" class="input-field w-full rounded-lg p-3 text-white">
                         <option value="">None</option>
                         <!-- JS populate -->
                     </select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Lenses</label>
                     <select id="cameraLensSelect" class="input-field w-full rounded-lg p-3 text-white">
                         <option value="">None</option>
                         <!-- JS populate -->
                     </select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Mood / Atmosphere</label>
                     <select id="moodSelect" class="input-field w-full rounded-lg p-3 text-white">
                         <option value="">None</option>
                         <!-- JS populate -->
                     </select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Composition</label>
                     <select id="compositionSelect" class="input-field w-full rounded-lg p-3 text-white">
                         <option value="">None</option>
@@ -340,7 +341,7 @@
             </div>
 
             <!-- Modifiers -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <label class="block text-white/60 text-xs font-bold mb-4 uppercase tracking-widest">Quality Boosters</label>
                 <div class="flex flex-wrap gap-2" id="boosterContainer">
                     <!-- JS populate -->
@@ -349,14 +350,14 @@
 
             <!-- Artist & Color -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Artist Style</label>
                     <select id="artistSelect" class="input-field w-full rounded-lg p-3 text-white">
                         <option value="">None</option>
                         <!-- JS populate -->
                     </select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl shadow-lg">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Color Palette</label>
                     <select id="colorSelect" class="input-field w-full rounded-lg p-3 text-white">
                         <option value="">None</option>
@@ -366,7 +367,7 @@
             </div>
 
             <!-- Advanced Parameters -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <label class="block text-white/60 text-xs font-bold mb-4 uppercase tracking-widest">Advanced Parameters</label>
                 <div class="space-y-4">
                     <div>
@@ -385,20 +386,20 @@
         <!-- Mockup Controls (Hidden by default) -->
         <div id="mockupControls" class="lg:col-span-2 space-y-6 hidden stagger-appear">
             <!-- Mockup Subject -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <label class="block text-white/60 text-xs font-bold mb-2 uppercase tracking-widest">Design / Content on Mockup</label>
                 <textarea id="mockupContent" rows="2" class="input-field w-full rounded-xl p-4 text-lg text-white placeholder-slate-500" placeholder="e.g., A minimalist logo of a fox, typography saying 'FUTURE'"></textarea>
             </div>
 
             <!-- Category & Item -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Mockup Category</label>
                     <select id="mockupCategorySelect" class="input-field w-full rounded-lg p-3 text-white" onchange="filterMockupItems()">
                         <!-- JS populate -->
                     </select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Target Item</label>
                     <select id="mockupItemSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
@@ -406,11 +407,11 @@
 
             <!-- Material & Finish -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Material / Texture</label>
                     <select id="mockupMaterialSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Print Finish</label>
                     <select id="mockupFinishSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
@@ -418,11 +419,11 @@
 
             <!-- Composition & Depth -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Composition / Layout</label>
                     <select id="mockupCompositionSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Focus / Depth</label>
                     <select id="mockupDepthSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
@@ -430,11 +431,11 @@
 
             <!-- Presentation & Environment -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Presentation View</label>
                     <select id="mockupViewSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Environment</label>
                     <select id="mockupEnvSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
@@ -442,19 +443,19 @@
             
             <!-- Lighting, Shadows & Color -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Lighting Setup</label>
                     <select id="mockupLightingSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Mood / Style</label>
                     <select id="mockupStyleSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Shadows & Effects</label>
                     <select id="mockupEffectSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Brand Color Palette</label>
                     <select id="mockupColorSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
@@ -464,7 +465,7 @@
         <!-- Product Photography Controls (Hidden by default) -->
         <div id="productControls" class="lg:col-span-2 space-y-6 hidden stagger-appear">
             <!-- Product Input -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <label class="block text-white/60 text-xs font-bold mb-2 uppercase tracking-widest">Product Description</label>
                 <textarea id="productInput" rows="2" class="input-field w-full rounded-xl p-4 text-lg text-white placeholder-slate-500" placeholder="e.g., A luxury perfume bottle with gold accents..."></textarea>
                 
@@ -487,36 +488,36 @@
 
             <!-- Context & Lighting -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Placement / Context</label>
                     <select id="prodContextSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Studio Lighting</label>
                     <select id="prodLightingSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
             </div>
 
             <!-- Outdoor Lighting -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Outdoor Lighting</label>
                 <select id="prodOutdoorLightingSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
             </div>
 
             <!-- Camera & Shot -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Angle</label>
                     <select id="prodAngleSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Shot Type / Lens</label>
                     <select id="prodShotSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
             </div>
 
             <!-- Camera Gear -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Gear</label>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                     <div>
@@ -542,11 +543,11 @@
 
             <!-- Material & Color -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Background Material</label>
                     <select id="prodMaterialSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Color Grading</label>
                     <select id="prodColorSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
@@ -554,11 +555,11 @@
 
             <!-- Props & Vibe -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Props & Elements</label>
                     <select id="prodPropsSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Brand Vibe</label>
                     <select id="prodVibeSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
@@ -568,7 +569,7 @@
         <!-- Graphic Design Controls (Hidden by default) -->
         <div id="graphicControls" class="lg:col-span-2 space-y-6 hidden stagger-appear">
             <!-- Core Concept -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <div class="flex justify-between items-center mb-2">
                     <label class="block text-white/60 text-xs font-bold uppercase tracking-widest">Design Concept</label>
                 </div>
@@ -576,7 +577,7 @@
             </div>
 
             <!-- Content & Context -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <label class="block text-white/60 text-xs font-bold mb-4 uppercase tracking-widest">Content & Context</label>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -677,40 +678,40 @@
 
             <!-- Design Specs -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Format</label>
                     <select id="graphicFormatSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Style</label>
                     <select id="graphicStyleSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Composition</label>
                     <select id="graphicCompositionSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Typography</label>
                     <select id="graphicTypographySelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Color Palette</label>
                     <select id="graphicColorSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
                     <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Visual Elements</label>
                     <select id="graphicElementSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
             </div>
 
             <!-- Theme & Boosters -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Theme</label>
                 <select id="graphicThemeSelect" class="input-field w-full rounded-lg p-3 text-white mb-6"></select>
                 
@@ -719,7 +720,7 @@
             </div>
 
             <!-- Reference (Moved from right column in source to left column here) -->
-            <div class="glass-panel p-6 rounded-2xl shadow-lg">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
                 <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Reference / Redesign</label>
                 <input id="graphicRefUrl" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white mb-3" placeholder="Image URL...">
                 <div class="grid grid-cols-2 gap-4">
@@ -742,7 +743,7 @@
         <div class="lg:col-span-1 space-y-6">
             
             <!-- Output Card -->
-            <div class="glass-panel p-6 rounded-2xl">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-medium text-white">Generated Prompt</h2>
                     <span class="text-xs bg-white/10 text-white/60 px-2 py-1 rounded" id="tokenCount">0 chars</span>
@@ -793,7 +794,7 @@
             </div>
 
             <!-- Favorites & History Panel -->
-            <div class="glass-panel p-6 rounded-2xl space-y-4 ">
+            <div class="glass-panel p-4 md:p-6 rounded-2xl space-y-4 ">
                 <div class="flex gap-4 border-b border-white/10 pb-2">
                     <button onclick="switchTab('favorites')" id="tab-favorites" class="text-white font-medium border-b-2 border-white pb-1 transition-colors">Favorites</button>
                     <button onclick="switchTab('history')" id="tab-history" class="text-white/40 font-medium hover:text-white transition-colors">History</button>
@@ -1354,14 +1355,21 @@
                 "Real Estate", "Finance & Banking", "Education & E-Learning", "Entertainment & Media", 
                 "Travel & Hospitality", "Automotive", "Beauty & Cosmetics", "Gaming & Esports", 
                 "Non-Profit & Charity", "Retail & E-commerce", "Architecture & Interior", 
-                "Legal & Corporate", "Sports & Fitness", "Art & Design"
+                "Legal & Corporate", "Sports & Fitness", "Art & Design", "Gems & Jewellery"
             ],
             occasions: [
                 "Summer Sale", "Black Friday / Cyber Monday", "Christmas / Holiday Season", 
                 "New Year's Eve", "Valentine's Day", "Halloween", "Back to School", 
                 "Product Launch", "Company Anniversary", "Conference / Summit", "Webinar Event", 
                 "Spring Collection", "Winter Special", "Earth Day", "Music Festival", 
-                "Grand Opening", "Flash Sale", "Hiring / Recruitment"
+                "Grand Opening", "Flash Sale", "Hiring / Recruitment",
+                "Diwali", "Holi", "Eid", "Navratri", "Durga Puja", "Ganesh Chaturthi", 
+                "Raksha Bandhan", "Janmashtami", "Dussehra", "Makar Sankranti", "Pongal", 
+                "Onam", "Baisakhi", "Karwa Chauth", "Republic Day (India)", 
+                "Independence Day (India)", "Gandhi Jayanti", "Maha Shivaratri", "Ram Navami", 
+                "Hanuman Jayanti", "Guru Nanak Jayanti", "Lohri", "Chhath Puja", "Ugadi", 
+                "Gudi Padwa", "Vasant Panchami", "Rath Yatra", "Kumbh Mela", "Bhai Dooj", 
+                "Teej", "Mahavir Jayanti", "Buddha Purnima"
             ],
             boosters: [
                 "Vector Style", "Adobe Illustrator", "Behance", "Dribbble", "Award Winning",
@@ -1698,30 +1706,40 @@
             // Load favorites from local storage
             loadFavorites();
 
-            // Initial prompt generation
-            generatePrompt();
+            // Set initial mode and glider position
+            const initialModeBtn = document.querySelector('.mode-btn.active');
+            if (initialModeBtn) {
+                // Use a timeout to ensure layout is calculated before moving the glider
+                setTimeout(() => switchMode(initialModeBtn.id.replace('mode-', ''), initialModeBtn), 50);
+            }
         }
 
-        function switchMode(mode) {
+        function switchMode(mode, element) {
             currentMode = mode;
-            const imgBtn = document.getElementById('mode-image');
-            const mockBtn = document.getElementById('mode-mockup');
-            const prodBtn = document.getElementById('mode-product');
-            const graphBtn = document.getElementById('mode-graphic');
+            const buttons = document.querySelectorAll('.mode-btn');
+            const glider = document.getElementById('mode-glider');
+            
+            // Update active button class
+            buttons.forEach(b => b.classList.remove('active'));
+            element.classList.add('active');
+
+            // Move glider
+            glider.style.width = `${element.offsetWidth}px`;
+            glider.style.transform = `translateX(${element.offsetLeft - 4}px)`;
+
             const imgCtrls = document.getElementById('imageControls');
             const mockCtrls = document.getElementById('mockupControls');
             const prodCtrls = document.getElementById('productControls');
             const graphCtrls = document.getElementById('graphicControls');
 
-            // Reset all
-            [imgBtn, mockBtn, prodBtn, graphBtn].forEach(b => b.classList.remove('active'));
+            // Hide all controls
             [imgCtrls, mockCtrls, prodCtrls, graphCtrls].forEach(c => c.classList.add('hidden'));
 
-            // Activate selected
-            if (mode === 'image') { imgBtn.classList.add('active'); imgCtrls.classList.remove('hidden'); }
-            else if (mode === 'mockup') { mockBtn.classList.add('active'); mockCtrls.classList.remove('hidden'); }
-            else if (mode === 'product') { prodBtn.classList.add('active'); prodCtrls.classList.remove('hidden'); }
-            else if (mode === 'graphic') { graphBtn.classList.add('active'); graphCtrls.classList.remove('hidden'); }
+            // Show selected controls
+            if (mode === 'image') { imgCtrls.classList.remove('hidden'); }
+            else if (mode === 'mockup') { mockCtrls.classList.remove('hidden'); }
+            else if (mode === 'product') { prodCtrls.classList.remove('hidden'); }
+            else if (mode === 'graphic') { graphCtrls.classList.remove('hidden'); }
             
             generatePrompt();
         }
