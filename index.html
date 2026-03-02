@@ -120,9 +120,9 @@
 
         /* Mode Switcher Buttons */
         .mode-btn {
-            padding: 0.75rem 1.5rem;
+            padding: 0.6rem 1rem;
             border-radius: 4px;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             font-weight: 500;
             color: #888;
             transition: color 0.3s ease;
@@ -135,6 +135,12 @@
         .mode-btn:hover { color: #fff; }
         .mode-btn.active {
             color: #fff;
+        }
+        @media (min-width: 768px) {
+            .mode-btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.875rem;
+            }
         }
 
         /* Ratio Buttons */
