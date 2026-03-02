@@ -239,6 +239,7 @@
                     <button onclick="switchMode('mockup', this)" id="mode-mockup" class="mode-btn">Mockup Generator</button>
                     <button onclick="switchMode('product', this)" id="mode-product" class="mode-btn">Product Shoot</button>
                     <button onclick="switchMode('graphic', this)" id="mode-graphic" class="mode-btn">Graphic Design</button>
+                    <button onclick="switchMode('model', this)" id="mode-model" class="mode-btn">Model Shoot</button>
                 </div>
             </div>
         </div>
@@ -735,6 +736,138 @@
                         <option value="high">High</option>
                         <option value="max">Max</option>
                     </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Shoot Controls (Hidden by default) -->
+        <div id="modelControls" class="lg:col-span-2 space-y-6 hidden stagger-appear">
+            <!-- Subject Core -->
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-2 uppercase tracking-widest">Subject Description</label>
+                <textarea id="modelSubjectInput" rows="2" class="input-field w-full rounded-xl p-4 text-lg text-white placeholder-slate-500" placeholder="e.g., A fashion model in a neon-lit street..."></textarea>
+            </div>
+
+            <!-- Model Characteristics -->
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-4 uppercase tracking-widest">Model Characteristics</label>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Gender</label>
+                        <select id="modelGenderSelect" class="input-field w-full rounded-lg p-3 text-sm text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Age Group</label>
+                        <select id="modelAgeSelect" class="input-field w-full rounded-lg p-3 text-sm text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Ethnicity</label>
+                        <select id="modelEthnicitySelect" class="input-field w-full rounded-lg p-3 text-sm text-white"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Body Type</label>
+                        <select id="modelBodySelect" class="input-field w-full rounded-lg p-3 text-sm text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Hair Style</label>
+                        <select id="modelHairStyleSelect" class="input-field w-full rounded-lg p-3 text-sm text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Hair Color</label>
+                        <select id="modelHairColorSelect" class="input-field w-full rounded-lg p-3 text-sm text-white"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Apparel & Look -->
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-4 uppercase tracking-widest">Apparel & Styling</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Outfit / Clothing</label>
+                        <input id="modelOutfitInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. Red silk dress, Leather jacket...">
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Makeup / Accessories</label>
+                        <input id="modelMakeupInput" type="text" class="input-field w-full rounded-lg p-3 text-sm text-white" placeholder="e.g. Natural makeup, Gold earrings...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Camera Gear -->
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Camera Gear</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Camera Body</label>
+                        <select id="modelCameraSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Lens Model</label>
+                        <select id="modelLensSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Focal Length</label>
+                        <select id="modelFocalSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Aperture</label>
+                        <select id="modelApertureSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lighting & Atmosphere -->
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Lighting & Atmosphere</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Lighting Setup</label>
+                        <select id="modelLightingSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Time of Day / Weather</label>
+                        <select id="modelTimeSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical & Film Look -->
+            <div class="glass-panel p-4 md:p-6 rounded-2xl shadow-lg">
+                <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Technical & Film Look</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Camera Angle</label>
+                        <select id="modelAngleSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-white/40 text-xs mb-1">Film Stock / Grading</label>
+                        <select id="modelFilmSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pose & Environment -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Pose & Action</label>
+                    <select id="modelPoseSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Facial Expression</label>
+                    <select id="modelExpressionSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Location / Background</label>
+                    <select id="modelLocationSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
+                </div>
+                <div class="glass-panel p-4 md:p-6 rounded-2xl">
+                    <label class="block text-white/60 text-xs font-bold mb-3 uppercase tracking-widest">Shot Type / Framing</label>
+                    <select id="modelShotSelect" class="input-field w-full rounded-lg p-3 text-white"></select>
                 </div>
             </div>
         </div>
@@ -1385,6 +1518,24 @@
             ]
         };
 
+        const modelData = {
+            genders: ["Female Model", "Male Model", "Non-Binary Model", "Androgynous Model", "Transgender Model", "Gender-Fluid Model"],
+            ages: ["Infant", "Toddler", "Child", "Pre-Teen", "Teenager", "18-year-old", "20s", "Young Adult", "30s", "40s", "Middle-aged", "50s", "60s", "Elderly", "70s", "80s"],
+            ethnicities: ["Caucasian", "African American", "Afro-Caribbean", "East Asian", "Japanese", "Korean", "Chinese", "Southeast Asian", "South Asian", "Indian", "Middle Eastern", "Hispanic/Latino", "Indigenous", "Native American", "Pacific Islander", "Polynesian", "Scandinavian", "Slavic", "Mediterranean", "Mixed Race", "Ethiopian", "Nigerian", "Brazilian"],
+            bodyTypes: ["Slim", "Athletic", "Muscular", "Curvy", "Plus Size", "Hourglass", "Pear-Shaped", "Tall", "Petite", "Average", "Bodybuilder", "Lean", "Voluptuous", "Skinny", "Heroic Build"],
+            hairStyles: ["Long Straight", "Short Bob", "Pixie Cut", "Buzz Cut", "Bald", "Afro", "Dreadlocks", "Braids", "Cornrows", "Wavy", "Curly", "Messy Bun", "Ponytail", "Mullet", "Mohawk", "Undercut", "Bangs", "Layered", "Shaved Sides", "Wet Look", "Slicked Back", "Pompadour", "Quiff"],
+            hairColors: ["Blonde", "Platinum Blonde", "Honey Blonde", "Brunette", "Chocolate Brown", "Black", "Jet Black", "Red", "Ginger", "Auburn", "Copper", "Grey", "Silver", "White", "Pastel Pink", "Electric Blue", "Neon Green", "Purple", "Ombre", "Balayage", "Rainbow", "Highlights"],
+            poses: ["Standing Confidently", "Sitting Relaxed", "Walking towards camera", "Looking over shoulder", "Hand on hip", "Arms crossed", "Touching hair", "Leaning against wall", "Dynamic Action", "Candid Laughing", "Reclining", "Jumping", "Squatting", "Kneeling", "Running", "Dancing", "Floating", "Vogueing", "High Fashion Contorted", "Hands in Pockets", "Back to Camera", "Profile Silhouette"],
+            expressions: ["Neutral", "Smiling", "Laughing", "Serious", "Seductive", "Fierce", "Pensive", "Surprised", "Dreamy", "Intense", "Crying", "Screaming", "Smirking", "Winking", "Bored", "Arrogant", "Confused", "Scared", "Joyful", "Melancholic", "Ethereal"],
+            shots: ["Extreme Close-up (Iris)", "Close-up (Face)", "Portrait (Head & Shoulders)", "Medium Shot (Waist Up)", "Cowboy Shot (Knees Up)", "Full Body Shot", "Wide Angle Environmental", "Low Angle Hero", "High Angle Vulnerable", "Dutch Angle", "Overhead", "Selfie", "Mirror Reflection", "Silhouette", "Macro"],
+            locations: ["Studio Solid Background", "Infinity Cove", "Urban City Street", "Neon Cyberpunk City", "Rooftop at Night", "Luxury Penthouse", "Cozy Bedroom", "Modern Kitchen", "Library", "Cafe", "Gym", "Beach at Sunset", "Forest", "Desert Dunes", "Snowy Mountain", "Flower Field", "Abandoned Warehouse", "Graffiti Wall", "Art Gallery", "Red Carpet", "Runway", "Swimming Pool", "Underwater", "Space Station", "Alien Planet"],
+            outfits: ["Casual Jeans and T-Shirt", "Business Suit", "Tuxedo", "Evening Gown", "Cocktail Dress", "Summer Sundress", "Leather Jacket & Boots", "Streetwear Hoodie", "Sportswear/Athleisure", "Swimwear/Bikini", "Lingerie", "Winter Coat & Scarf", "Trench Coat", "Bohemian Outfit", "Vintage 50s", "Retro 80s", "Cyberpunk Techwear", "Steampunk", "Gothic", "Haute Couture", "Traditional Kimono", "Saree", "Hanbok", "Police Uniform", "Doctor Uniform", "Astronaut Suit"],
+            lighting: ["Softbox", "Rembrandt Lighting", "Butterfly Lighting", "Split Lighting", "Loop Lighting", "Rim Lighting", "Hard Light", "Volumetric Lighting", "Neon Lights", "Studio Strobe", "Natural Window Light", "Bioluminescent", "Ring Light", "Cinematic Haze", "Silhouette", "Dappled Light"],
+            timeOfDay: ["Sunrise", "High Noon", "Golden Hour", "Sunset", "Blue Hour", "Night", "Midnight", "Overcast", "Rainy", "Stormy", "Snowy", "Foggy", "Hazy", "Clear Sky", "Starry Night", "Aurora Borealis"],
+            angles: ["Eye-Level", "Low Angle", "High Angle", "Dutch Angle", "Overhead", "Worm's Eye View", "Profile", "Three-Quarter View", "Behind the Back", "Point of View"],
+            filmTypes: ["Kodak Portra 400", "Fujifilm Pro 400H", "Cinestill 800T", "Kodachrome", "Ilford HP5 (B&W)", "Sepia", "Technicolor", "Polaroid", "Vintage VHS", "Bleach Bypass", "Cross Processed", "HDR", "35mm Grain", "8mm Film", "Digital Sharp", "Soft Focus", "Bokeh Heavy"]
+        };
+
         const randomSubjects = [
             "A futuristic astronaut exploring a crystal cave",
             "A cozy cottage in a magical forest with glowing mushrooms",
@@ -1440,6 +1591,21 @@
             mockupCameras.sort();
             mockupLenses.sort();
             // Focals and Apertures usually better kept in logical order, not alphabetical
+
+            // Sort Model Data
+            modelData.genders.sort();
+            modelData.ages.sort();
+            modelData.ethnicities.sort();
+            modelData.bodyTypes.sort();
+            modelData.hairStyles.sort();
+            modelData.hairColors.sort();
+            modelData.poses.sort();
+            modelData.expressions.sort();
+            modelData.locations.sort();
+            modelData.lighting.sort();
+            modelData.timeOfDay.sort();
+            modelData.angles.sort();
+            modelData.filmTypes.sort();
 
             productContexts.sort();
             productLighting.sort();
@@ -1621,6 +1787,26 @@
             populate('graphicOccasionSelect', graphicData.occasions);
             populate('graphicMoodSelect', moods); // Reuse moods
 
+            // Populate Model Dropdowns
+            populate('modelGenderSelect', modelData.genders);
+            populate('modelAgeSelect', modelData.ages);
+            populate('modelEthnicitySelect', modelData.ethnicities);
+            populate('modelBodySelect', modelData.bodyTypes);
+            populate('modelHairStyleSelect', modelData.hairStyles);
+            populate('modelHairColorSelect', modelData.hairColors);
+            populate('modelPoseSelect', modelData.poses);
+            populate('modelExpressionSelect', modelData.expressions);
+            populate('modelLocationSelect', modelData.locations);
+            populate('modelShotSelect', modelData.shots);
+            populate('modelCameraSelect', mockupCameras);
+            populate('modelLensSelect', mockupLenses);
+            populate('modelFocalSelect', mockupFocals);
+            populate('modelApertureSelect', mockupApertures);
+            populate('modelLightingSelect', modelData.lighting);
+            populate('modelTimeSelect', modelData.timeOfDay);
+            populate('modelAngleSelect', modelData.angles);
+            populate('modelFilmSelect', modelData.filmTypes);
+
             // Populate Graphic Boosters
             const graphicBoosterContainer = document.getElementById('graphicBoosterContainer');
             graphicData.boosters.forEach(b => {
@@ -1662,6 +1848,12 @@
              'graphicAudienceInput', 'graphicBrandInput', 'graphicBrandNameInput', 'graphicHeadlineInput', 'graphicSubheadlineInput', 'graphicCtaInput', 'graphicTaglineInput', 
              'graphicDateInput', 'graphicTimeInput', 'graphicVenueInput', 'graphicPriceInput', 'graphicContactInput', 'graphicSocialInput', 'graphicDisclaimerInput',
              'graphicRefUrl', 'graphicRefMode', 'graphicRefWeight'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener(id.includes('Input') ? 'input' : 'change', generatePrompt);
+            });
+
+            // Model Listeners
+            ['modelSubjectInput', 'modelGenderSelect', 'modelAgeSelect', 'modelEthnicitySelect', 'modelBodySelect', 'modelHairStyleSelect', 'modelHairColorSelect', 'modelOutfitInput', 'modelMakeupInput', 'modelPoseSelect', 'modelExpressionSelect', 'modelLocationSelect', 'modelShotSelect', 'modelCameraSelect', 'modelLensSelect', 'modelFocalSelect', 'modelApertureSelect', 'modelLightingSelect', 'modelTimeSelect', 'modelAngleSelect', 'modelFilmSelect'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.addEventListener(id.includes('Input') ? 'input' : 'change', generatePrompt);
             });
@@ -1731,15 +1923,17 @@
             const mockCtrls = document.getElementById('mockupControls');
             const prodCtrls = document.getElementById('productControls');
             const graphCtrls = document.getElementById('graphicControls');
+            const modelCtrls = document.getElementById('modelControls');
 
             // Hide all controls
-            [imgCtrls, mockCtrls, prodCtrls, graphCtrls].forEach(c => c.classList.add('hidden'));
+            [imgCtrls, mockCtrls, prodCtrls, graphCtrls, modelCtrls].forEach(c => c.classList.add('hidden'));
 
             // Show selected controls
             if (mode === 'image') { imgCtrls.classList.remove('hidden'); }
             else if (mode === 'mockup') { mockCtrls.classList.remove('hidden'); }
             else if (mode === 'product') { prodCtrls.classList.remove('hidden'); }
             else if (mode === 'graphic') { graphCtrls.classList.remove('hidden'); }
+            else if (mode === 'model') { modelCtrls.classList.remove('hidden'); }
             
             generatePrompt();
         }
@@ -2023,6 +2217,71 @@
             document.getElementById('tokenCount').textContent = `${finalString.length} chars`;
         }
 
+        function generateModelPrompt() {
+            const subject = document.getElementById('modelSubjectInput').value.trim();
+            const gender = document.getElementById('modelGenderSelect').value;
+            const age = document.getElementById('modelAgeSelect').value;
+            const ethnicity = document.getElementById('modelEthnicitySelect').value;
+            const body = document.getElementById('modelBodySelect').value;
+            const hairStyle = document.getElementById('modelHairStyleSelect').value;
+            const hairColor = document.getElementById('modelHairColorSelect').value;
+            const outfit = document.getElementById('modelOutfitInput').value.trim();
+            const makeup = document.getElementById('modelMakeupInput').value.trim();
+            const pose = document.getElementById('modelPoseSelect').value;
+            const expression = document.getElementById('modelExpressionSelect').value;
+            const location = document.getElementById('modelLocationSelect').value;
+            const shot = document.getElementById('modelShotSelect').value;
+            const camera = document.getElementById('modelCameraSelect').value;
+            const lens = document.getElementById('modelLensSelect').value;
+            const focal = document.getElementById('modelFocalSelect').value;
+            const aperture = document.getElementById('modelApertureSelect').value;
+            const lighting = document.getElementById('modelLightingSelect').value;
+            const time = document.getElementById('modelTimeSelect').value;
+            const angle = document.getElementById('modelAngleSelect').value;
+            const film = document.getElementById('modelFilmSelect').value;
+
+            let parts = [];
+
+            // Core Subject Construction
+            let core = shot ? `${shot} of a` : "Portrait of a";
+            if (age) core += ` ${age}`;
+            if (ethnicity) core += ` ${ethnicity}`;
+            if (gender) core += ` ${gender}`;
+            else core += " Model";
+            
+            if (body) core += `, ${body} body type`;
+            if (hairStyle || hairColor) core += `, with ${hairStyle || ''} ${hairColor || ''} hair`;
+            parts.push(core);
+
+            if (subject) parts.push(subject);
+            if (outfit) parts.push(`wearing ${outfit}`);
+            if (makeup) parts.push(`Styling: ${makeup}`);
+            if (pose) parts.push(`Pose: ${pose}`);
+            if (expression) parts.push(`Expression: ${expression}`);
+            if (location) parts.push(`Location: ${location}`);
+            
+            if (lighting) parts.push(lighting);
+            if (time) parts.push(time);
+            if (angle) parts.push(angle);
+            if (film) parts.push(`Film Look: ${film}`);
+
+            if (camera) parts.push(`Shot on ${camera}`);
+            if (lens) parts.push(`Lens: ${lens}`);
+            if (focal) parts.push(`Focal Length: ${focal}`);
+            if (aperture) parts.push(`Aperture: ${aperture}`);
+
+            // Tech Specs
+            parts.push("High Fashion Photography, 8k, Highly Detailed, Professional Lighting, Sharp Focus, Photorealistic");
+
+            let finalString = parts.join(', ');
+            if (currentRatio) finalString += ` ${currentRatio}`;
+            const negative = document.getElementById('negativePrompt').value.trim();
+            if (negative) finalString += ` --no ${negative}`;
+            
+            document.getElementById('finalPrompt').value = finalString;
+            document.getElementById('tokenCount').textContent = `${finalString.length} chars`;
+        }
+
         function generatePrompt() {
             if (currentMode === 'mockup') {
                 generateMockupPrompt();
@@ -2032,6 +2291,9 @@
                 return;
             } else if (currentMode === 'graphic') {
                 generateGraphicPrompt();
+                return;
+            } else if (currentMode === 'model') {
+                generateModelPrompt();
                 return;
             }
 
@@ -2169,6 +2431,15 @@
                 if (!document.getElementById('graphicTypographySelect').value) document.getElementById('graphicTypographySelect').value = "Bold Sans-Serif";
                 if (!document.getElementById('graphicColorSelect').value) document.getElementById('graphicColorSelect').value = "Vibrant";
             }
+
+            // 5. Model Mode Logic
+            else if (currentMode === 'model') {
+                if (!document.getElementById('modelGenderSelect').value) document.getElementById('modelGenderSelect').value = "Female Model";
+                if (!document.getElementById('modelAgeSelect').value) document.getElementById('modelAgeSelect').value = "20s";
+                if (!document.getElementById('modelShotSelect').value) document.getElementById('modelShotSelect').value = "Portrait (Head & Shoulders)";
+                if (!document.getElementById('modelLocationSelect').value) document.getElementById('modelLocationSelect').value = "Studio Solid Background";
+                if (!document.getElementById('modelExpressionSelect').value) document.getElementById('modelExpressionSelect').value = "Neutral";
+            }
             
             updateUIFromState();
             generatePrompt();
@@ -2250,6 +2521,29 @@
                     const b = boosters[Math.floor(Math.random() * boosters.length)];
                     if(!selectedGraphicBoosters.includes(b)) selectedGraphicBoosters.push(b);
                 }
+            } else if (currentMode === 'model') {
+                // Model Randomization
+                const setRandom = (id, arr) => { document.getElementById(id).value = Math.random() > 0.2 ? arr[Math.floor(Math.random() * arr.length)] : ""; };
+                setRandom('modelGenderSelect', modelData.genders);
+                setRandom('modelAgeSelect', modelData.ages);
+                setRandom('modelEthnicitySelect', modelData.ethnicities);
+                setRandom('modelBodySelect', modelData.bodyTypes);
+                setRandom('modelHairStyleSelect', modelData.hairStyles);
+                setRandom('modelHairColorSelect', modelData.hairColors);
+                setRandom('modelPoseSelect', modelData.poses);
+                setRandom('modelExpressionSelect', modelData.expressions);
+                setRandom('modelLocationSelect', modelData.locations);
+                setRandom('modelShotSelect', modelData.shots);
+                setRandom('modelCameraSelect', mockupCameras);
+                setRandom('modelLensSelect', mockupLenses);
+                setRandom('modelFocalSelect', mockupFocals);
+                setRandom('modelApertureSelect', mockupApertures);
+                setRandom('modelLightingSelect', modelData.lighting);
+                setRandom('modelTimeSelect', modelData.timeOfDay);
+                setRandom('modelAngleSelect', modelData.angles);
+                setRandom('modelFilmSelect', modelData.filmTypes);
+                
+                if (Math.random() > 0.5) document.getElementById('modelOutfitInput').value = modelData.outfits[Math.floor(Math.random() * modelData.outfits.length)];
             } else {
                 // Product Randomization
                 const setRandom = (id, arr) => { document.getElementById(id).value = Math.random() > 0.2 ? arr[Math.floor(Math.random() * arr.length)] : ""; };
@@ -2342,6 +2636,11 @@
                  if(el) el.value = '';
              });
 
+            ['modelSubjectInput', 'modelGenderSelect', 'modelAgeSelect', 'modelEthnicitySelect', 'modelBodySelect', 'modelHairStyleSelect', 'modelHairColorSelect', 'modelOutfitInput', 'modelMakeupInput', 'modelPoseSelect', 'modelExpressionSelect', 'modelLocationSelect', 'modelShotSelect', 'modelCameraSelect', 'modelLensSelect', 'modelFocalSelect', 'modelApertureSelect', 'modelLightingSelect', 'modelTimeSelect', 'modelAngleSelect', 'modelFilmSelect'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.value = '';
+             });
+
             document.getElementById('artistSelect').value = '';
             document.getElementById('colorSelect').value = '';
 
@@ -2393,6 +2692,7 @@
             else if (currentMode === 'mockup') subject = document.getElementById('mockupContent').value;
             else if (currentMode === 'product') subject = document.getElementById('productInput').value;
             else if (currentMode === 'graphic') subject = document.getElementById('graphicConceptInput').value;
+            else if (currentMode === 'model') subject = document.getElementById('modelSubjectInput').value;
             
             saveToHistory(copyText.value, subject || "Untitled Prompt");
             
@@ -2415,6 +2715,7 @@
             const mockupSub = document.getElementById('mockupContent').value.trim();
             const productSub = document.getElementById('productInput').value.trim();
             const graphicSub = document.getElementById('graphicConceptInput').value.trim();
+            const modelSub = document.getElementById('modelSubjectInput').value.trim();
             if (!fullPrompt) return;
 
             const state = {
@@ -2493,10 +2794,32 @@
                 graphicPrice: document.getElementById('graphicPriceInput').value.trim(),
                 graphicContact: document.getElementById('graphicContactInput').value.trim(),
                 graphicSocial: document.getElementById('graphicSocialInput').value.trim(),
-                graphicDisclaimer: document.getElementById('graphicDisclaimerInput').value.trim()
+                graphicDisclaimer: document.getElementById('graphicDisclaimerInput').value.trim(),
+                // Model State
+                modelSub: modelSub,
+                modelGender: document.getElementById('modelGenderSelect').value,
+                modelAge: document.getElementById('modelAgeSelect').value,
+                modelEth: document.getElementById('modelEthnicitySelect').value,
+                modelBody: document.getElementById('modelBodySelect').value,
+                modelHairS: document.getElementById('modelHairStyleSelect').value,
+                modelHairC: document.getElementById('modelHairColorSelect').value,
+                modelOutfit: document.getElementById('modelOutfitInput').value,
+                modelMakeup: document.getElementById('modelMakeupInput').value,
+                modelPose: document.getElementById('modelPoseSelect').value,
+                modelExpr: document.getElementById('modelExpressionSelect').value,
+                modelLoc: document.getElementById('modelLocationSelect').value,
+                modelShot: document.getElementById('modelShotSelect').value,
+                modelCamera: document.getElementById('modelCameraSelect').value,
+                modelLens: document.getElementById('modelLensSelect').value,
+                modelFocal: document.getElementById('modelFocalSelect').value,
+                modelAperture: document.getElementById('modelApertureSelect').value,
+                modelLighting: document.getElementById('modelLightingSelect').value,
+                modelTime: document.getElementById('modelTimeSelect').value,
+                modelAngle: document.getElementById('modelAngleSelect').value,
+                modelFilm: document.getElementById('modelFilmSelect').value
             };
             
-            let sub = currentMode === 'image' ? subject : (currentMode === 'mockup' ? `Mockup: ${mockupSub}` : (currentMode === 'product' ? `Product: ${productSub}` : `Graphic: ${graphicSub}`));
+            let sub = currentMode === 'image' ? subject : (currentMode === 'mockup' ? `Mockup: ${mockupSub}` : (currentMode === 'product' ? `Product: ${productSub}` : (currentMode === 'graphic' ? `Graphic: ${graphicSub}` : `Model: ${modelSub}`)));
             
             const favorite = { id: Date.now(), subject: sub || "Untitled Prompt", fullPrompt, state };
             favorites.unshift(favorite); // Add to beginning
@@ -2625,6 +2948,28 @@
                     document.getElementById('graphicDisclaimerInput').value = fav.state.graphicDisclaimer || "";
                     selectedGraphicBoosters = fav.state.graphicBoosters || [];
                     updateUIFromState();
+                } else if (currentMode === 'model') {
+                    document.getElementById('modelSubjectInput').value = fav.state.modelSub || "";
+                    document.getElementById('modelGenderSelect').value = fav.state.modelGender || "";
+                    document.getElementById('modelAgeSelect').value = fav.state.modelAge || "";
+                    document.getElementById('modelEthnicitySelect').value = fav.state.modelEth || "";
+                    document.getElementById('modelBodySelect').value = fav.state.modelBody || "";
+                    document.getElementById('modelHairStyleSelect').value = fav.state.modelHairS || "";
+                    document.getElementById('modelHairColorSelect').value = fav.state.modelHairC || "";
+                    document.getElementById('modelOutfitInput').value = fav.state.modelOutfit || "";
+                    document.getElementById('modelMakeupInput').value = fav.state.modelMakeup || "";
+                    document.getElementById('modelPoseSelect').value = fav.state.modelPose || "";
+                    document.getElementById('modelExpressionSelect').value = fav.state.modelExpr || "";
+                    document.getElementById('modelLocationSelect').value = fav.state.modelLoc || "";
+                    document.getElementById('modelShotSelect').value = fav.state.modelShot || "";
+                    document.getElementById('modelCameraSelect').value = fav.state.modelCamera || "";
+                    document.getElementById('modelLensSelect').value = fav.state.modelLens || "";
+                    document.getElementById('modelFocalSelect').value = fav.state.modelFocal || "";
+                    document.getElementById('modelApertureSelect').value = fav.state.modelAperture || "";
+                    document.getElementById('modelLightingSelect').value = fav.state.modelLighting || "";
+                    document.getElementById('modelTimeSelect').value = fav.state.modelTime || "";
+                    document.getElementById('modelAngleSelect').value = fav.state.modelAngle || "";
+                    document.getElementById('modelFilmSelect').value = fav.state.modelFilm || "";
                 }
                 
                 document.getElementById('chaosSlider').value = fav.state.chaos || 0;
